@@ -1,0 +1,56 @@
+; PodOClock.pkg
+;
+; Pod O'Clock for S60 phones.
+; http://code.google.com/p/podoclock/
+; Copyright (C) 2010  Hugo van Kemenade
+; 
+; This program is free software; you can redistribute it and/or
+; modify it under the terms of the GNU General Public License
+; as published by the Free Software Foundation; either version 2
+; of the License, or (at your option) any later version.
+; 
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+; 
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+; 
+
+; Language - standard language definitions
+&EN
+
+; Standard SIS file header
+#{"Pod O'Clock"}, (0xA89FB98E),1,0,0
+
+; Localised Vendor name
+%{"Pod O'Clock"}
+
+; Unique Vendor name
+:"Pod O'Clock"
+
+; Supports S60 v 3.0
+[0x101F7961], 0, 0, 0, {"S60ProductID"}
+
+; Supports S60 release 5.0
+; [0x1028315F], 0, 0, 0, {"S60ProductID"}
+
+; Supports Symbian^3
+; [0x20022E6D], 0, 0, 0, {"S60ProductID"}
+
+; Files to install
+"..\..\epoc32\release\gcce\urel\PodOClock.exe" - "!:\sys\bin\PodOClock.exe"
+
+{
+"..\..\epoc32\data\z\resource\apps\PodOClock.r01"
+} - "!:\resource\apps\PodOClock.rsc"
+
+"..\..\epoc32\data\z\private\10003a3f\import\apps\PodOClock_reg.r01" -"!:\private\10003a3f\import\apps\PodOClock_reg.r01"
+"..\..\epoc32\data\z\resource\apps\podoclock_aif.mif" - "!:\resource\apps\podoclock_aif.mif"
+
+; Required for application to be covered by backup/restore facility
+"backup_registration.xml" - "!:\private\A89FB98E\backup_registration.xml"
+
+; End of file

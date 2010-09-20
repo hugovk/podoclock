@@ -1,0 +1,178 @@
+/*
+Pod O'Clock for S60 phones.
+http://code.google.com/p/podoclock/
+Copyright (C) 2010  Hugo van Kemenade
+
+This file is part of Pod O'Clock.
+
+Pod O'Clock is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+Pod O'Clock is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+//  RESOURCE IDENTIFIER
+NAME POOK    // 4 letter ID
+
+
+//  INCLUDES
+#include <appinfo.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <eikon.rh>
+#include "PodOClock.hrh"
+#include "PodOClock.loc"
+
+CHARACTER_SET UTF8
+
+//  RESOURCE DEFINITIONS
+
+// Define the resource file signature, should be empty
+RESOURCE RSS_SIGNATURE
+	{
+	}
+
+RESOURCE TBUF r_default_document_name
+	{
+	buf="POOK";
+	}
+
+RESOURCE EIK_APP_INFO
+	{
+	menubar = r_podoclock_menubar;
+	cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+	}
+
+RESOURCE MENU_BAR r_podoclock_menubar
+	{
+	titles =
+		{
+		MENU_TITLE { menu_pane = r_podoclock_menu_pane; }
+		};
+	}
+
+// Options menu
+RESOURCE MENU_PANE r_podoclock_menu_pane
+	{
+	items =
+		{
+		MENU_ITEM
+				{
+				command = EPodOClockSetAlarm;
+				txt = STR_podoclock_set_alarm;
+				},
+		MENU_ITEM
+				{
+				command = EPodOClockRemoveAlarm;
+				txt = STR_podoclock_remove_alarm;
+				},
+		MENU_ITEM
+				{
+				command = EPodOClockAbout;
+				txt = STR_podoclock_about;
+				},
+		MENU_ITEM
+				{
+				command = EAknSoftkeyExit;
+				txt = STR_podoclock_exit;
+				}
+		};
+	}
+
+
+// Resources for messages
+RESOURCE TBUF32 r_podoclock_caption_string { buf=STR_podoclock_caption_string; }
+
+RESOURCE LOCALISABLE_APP_INFO r_podoclock_localisable_app_info
+	{
+	short_caption = STR_podoclock_caption_string;
+	caption_and_icon =
+	CAPTION_AND_ICON_INFO
+		{
+		caption = STR_podoclock_caption_string;
+
+		number_of_icons = 1;
+		icon_file = "\\resource\\apps\\PodOClock_aif.mif";
+		};
+	}
+
+RESOURCE DIALOG r_podoclock_about_box
+	{
+	flags = EEikDialogFlagNoDrag | EEikDialogFlagCbaButtons | EEikDialogFlagWait;
+	buttons = R_AVKON_SOFTKEYS_OK_EMPTY;
+	items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtPopupHeadingPane;
+			id = EAknMessageQueryHeaderId;
+			control = AVKON_HEADING
+				{
+				headinglayout = R_AVKON_LIST_HEADING_PANE_POPUPS;
+				};
+			},
+		DLG_LINE
+			{
+			type = EAknCtMessageQuery;
+			id = EAknMessageQueryContentId;
+			control = AVKON_MESSAGE_QUERY
+				{
+				message = "";
+				};
+			}
+		};
+	}
+
+RESOURCE DIALOG r_podoclock_yes_no_query_dialog
+	{
+	flags = EGeneralQueryFlags;
+	buttons = R_AVKON_SOFTKEYS_YES_NO;
+	items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtQuery;
+			id = EPodOClockQuery;
+
+			control = AVKON_CONFIRMATION_QUERY
+				{
+				layout = EConfirmationQueryLayout;
+				animation = R_QGN_NOTE_QUERY_ANIM;
+				};
+			}
+		};
+	}
+
+RESOURCE DIALOG r_podoclock_ok_cancel_query_dialog
+	{
+	flags = EGeneralQueryFlags;
+	buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+	items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtQuery;
+			id = EPodOClockQuery;
+
+			control = AVKON_CONFIRMATION_QUERY
+				{
+				layout = EConfirmationQueryLayout;
+				animation = R_QGN_NOTE_WARNING_ANIM;
+				};
+			}
+		};
+	}
+
+RESOURCE TBUF r_podoclock_about			{buf = STR_podoclock_about;}
+RESOURCE TBUF r_podoclock_about_text	{buf = STR_podoclock_about_text;}
+RESOURCE TBUF r_podoclock_hide			{buf = STR_podoclock_hide;}
+
+// End of file

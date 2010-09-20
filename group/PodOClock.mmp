@@ -1,0 +1,85 @@
+/*
+Pod O'Clock for S60 phones.
+http://code.google.com/p/podoclock/
+Copyright (C) 2010  Hugo van Kemenade
+
+This file is part of Pod O'Clock.
+
+Pod O'Clock is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+Pod O'Clock is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+TARGET			PodOClock.exe
+TARGETTYPE		exe
+UID				0x100039CE 0xA89FB98E
+
+SECUREID		0xA89FB98E
+EPOCSTACKSIZE	0x5000
+
+#ifdef WINS
+LANG 01
+#else
+LANG 01
+#endif
+
+SOURCEPATH		..\src
+SOURCE			PodOClock.cpp
+SOURCE			PodOClockApplication.cpp
+SOURCE			PodOClockAppUi.cpp
+SOURCE			PodOClockAppView.cpp
+SOURCE			PodOClockDocument.cpp
+SOURCE			PodOClockSoundPlayer.cpp
+SOURCE			PodOClockTimer.cpp
+
+START RESOURCE	..\data\PodOClock.rss
+HEADER
+TARGETPATH		resource\apps
+END //RESOURCE
+
+START RESOURCE	..\data\PodOClock_reg.rss
+#ifdef WINSCW
+TARGETPATH		\private\10003a3f\apps
+#else
+TARGETPATH		\private\10003a3f\import\apps
+#endif
+END //RESOURCE
+
+
+USERINCLUDE		..\inc
+
+SYSTEMINCLUDE	\epoc32\include
+SYSTEMINCLUDE	\epoc32\include\mmf\common
+
+LIBRARY			aknskins.lib
+LIBRARY			apgrfx.lib
+LIBRARY			apparc.lib
+LIBRARY			avkon.lib
+LIBRARY			commonengine.lib
+LIBRARY			cone.lib
+LIBRARY			efsrv.lib
+LIBRARY			eikcoctl.lib
+LIBRARY			eikcore.lib
+LIBRARY			eikdlg.lib
+LIBRARY			estor.lib
+LIBRARY			euser.lib
+LIBRARY			gdi.lib
+LIBRARY			mediaclientaudio.lib
+LIBRARY			mmfcontrollerframework.lib
+LIBRARY			ws32.lib
+
+DEBUGLIBRARY	flogger.lib
+
+VENDORID	0
+CAPABILITY	NONE
+
+// End of file
