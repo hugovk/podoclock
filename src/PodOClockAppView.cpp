@@ -200,9 +200,21 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 		{
 		if (!iMetaDataFetched)
 			{
+			iTitle  = _L("");
+			iAlbum  = _L("");
+			iArtist = _L("");
+			iYear   = _L("");
+			iGenre  = _L("");
 			iSoundPlayer->GetMetaDataL(iTitle, iAlbum, iArtist, 
 									   iYear, iGenre);
 			iMetaDataFetched = ETrue;
+			}
+
+		if (iTitle.Length() == 0)
+			{
+			TParse parse;
+			parse.Set(iCurrentFileName, NULL, NULL);
+			iTitle = parse.NameAndExt();
 			}
 		DrawText(iTitle, y, KRgbGreen);
 		y += 20;
