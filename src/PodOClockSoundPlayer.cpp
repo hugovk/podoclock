@@ -37,10 +37,10 @@ CPodOClockSoundPlayer::CPodOClockSoundPlayer(
 										TInt aVolume)
 :iNotify(aNotify),
  iVolume(aVolume)
-    {
-    TRACER_AUTO;
+	{
+	TRACER_AUTO;
 	// No implementation required
-    }
+	}
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::ConstructL
@@ -48,11 +48,12 @@ CPodOClockSoundPlayer::CPodOClockSoundPlayer(
 // -----------------------------------------------------------------------------
 //
 void CPodOClockSoundPlayer::ConstructL()
-    {
-    TRACER_AUTO;
-    // Create a player utility
-    iMdaAudioPlayerUtility = CMdaAudioPlayerUtility::NewL(*this);
-    }
+	{
+	TRACER_AUTO;
+	// Create a player utility
+	iMdaAudioPlayerUtility = CMdaAudioPlayerUtility::NewL(*this);
+	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::NewL
@@ -62,12 +63,13 @@ void CPodOClockSoundPlayer::ConstructL()
 CPodOClockSoundPlayer* CPodOClockSoundPlayer::NewL(
 										MPodOClockSoundPlayerNotify& aNotify,
 										TInt aVolume)
-    {
-    TRACER_AUTO;
-    CPodOClockSoundPlayer* self(CPodOClockSoundPlayer::NewLC(aNotify, aVolume));
-    CleanupStack::Pop(self);
-    return self;
-    }
+	{
+	TRACER_AUTO;
+	CPodOClockSoundPlayer* self(CPodOClockSoundPlayer::NewLC(aNotify, aVolume));
+	CleanupStack::Pop(self);
+	return self;
+	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::NewLC
@@ -77,26 +79,27 @@ CPodOClockSoundPlayer* CPodOClockSoundPlayer::NewL(
 CPodOClockSoundPlayer* CPodOClockSoundPlayer::NewLC(
 										MPodOClockSoundPlayerNotify& aNotify,
 										TInt aVolume)
-    {
-    TRACER_AUTO;
-    CPodOClockSoundPlayer* self(new (ELeave) CPodOClockSoundPlayer(aNotify, 
+	{
+	TRACER_AUTO;
+	CPodOClockSoundPlayer* self(new (ELeave) CPodOClockSoundPlayer(aNotify, 
 																	aVolume));
-    CleanupStack::PushL(self);
-    self->ConstructL();
-    return self;
-    }
+	CleanupStack::PushL(self);
+	self->ConstructL();
+	return self;
+	}
 
 // Destructor
 CPodOClockSoundPlayer::~CPodOClockSoundPlayer()
-    {
-    TRACER_AUTO;
-    if (iPlayerState == ECEPlaying)
-        {
-        StopPlayback();
-        }
-        
-    delete iMdaAudioPlayerUtility;
-    }
+	{
+	TRACER_AUTO;
+	if (iPlayerState > EPodOClockReadyToPlay)
+		{
+		StopPlayback();
+		}
+	
+	delete iMdaAudioPlayerUtility;
+	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::MapcInitComplete
@@ -105,21 +108,23 @@ CPodOClockSoundPlayer::~CPodOClockSoundPlayer()
 // -----------------------------------------------------------------------------
 //
 void CPodOClockSoundPlayer::MapcInitComplete(
-                            TInt aError, 
-                            const TTimeIntervalMicroSeconds& /*aDuration*/)
+							TInt aError, 
+							const TTimeIntervalMicroSeconds& /*aDuration*/)
 	{
-    TRACER_AUTO;
-	iPlayerState = aError ? ECENotReady : ECEReadyToPlay;
+	TRACER_AUTO;
+	iPlayerState = aError ? EPodOClockNotReady : EPodOClockReadyToPlay;
 
-    // Start the playback, if audio file initialisation was successful
-    if (iPlayerState == ECEReadyToPlay)
-	    {
+	// Start the playback, if audio file initialisation was successful
+	if (iPlayerState == EPodOClockReadyToPlay)
+		{
 		iMdaAudioPlayerUtility->SetVolume(iVolume);
-	    iMdaAudioPlayerUtility->Play();
-		iPlayerState = ECEPlaying;
-		iNotify.PlayerStartedL();
-	    }
+		iMdaAudioPlayerUtility->Play();
+		iPlayerState = EPodOClockPlaying;
+//		iNotify.PlayerStartedL();
+		}
+	iNotify.PlayerStartedL(aError);
 	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::MapcPlayComplete
@@ -128,9 +133,11 @@ void CPodOClockSoundPlayer::MapcInitComplete(
 //
 void CPodOClockSoundPlayer::MapcPlayComplete(TInt aError)
 	{
-    TRACER_AUTO;
-	iPlayerState = aError ? ECENotReady : ECEReadyToPlay;
+	TRACER_AUTO;
+	iPlayerState = aError ? EPodOClockNotReady : EPodOClockReadyToPlay;
+	iNotify.PlayerEndedL();
 	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::StartPlayback
@@ -139,10 +146,15 @@ void CPodOClockSoundPlayer::MapcPlayComplete(TInt aError)
 //
 void CPodOClockSoundPlayer::StartPlaybackL(const TDesC& aFileName)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	// Open the sound file
+	if (iPlayerState > EPodOClockReadyToPlay)
+		{
+		StopPlayback();
+		}
 	iMdaAudioPlayerUtility->OpenFileL(aFileName);
 	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::StopPlayback
@@ -151,15 +163,45 @@ void CPodOClockSoundPlayer::StartPlaybackL(const TDesC& aFileName)
 //
 void CPodOClockSoundPlayer::StopPlayback()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	// Stop audio playback and close the audio file
-	if (iMdaAudioPlayerUtility && iPlayerState == ECEPlaying)
-	    {
-	    iMdaAudioPlayerUtility->Stop();
-	    iMdaAudioPlayerUtility->Close();
-	    iPlayerState = ECENotReady;
-	    }
+	if (iMdaAudioPlayerUtility && iPlayerState > EPodOClockReadyToPlay)
+		{
+		iMdaAudioPlayerUtility->Stop();
+		iMdaAudioPlayerUtility->Close();
+		iPlayerState = EPodOClockNotReady;
+		}
 	}
+
+
+// -----------------------------------------------------------------------------
+// CPodOClockSoundPlayer::PausePlayback
+// Pause music playback.
+// -----------------------------------------------------------------------------
+//
+void CPodOClockSoundPlayer::PausePlayback()
+	{
+	TRACER_AUTO;
+	// Pause audio playback
+	if (iMdaAudioPlayerUtility && iPlayerState == EPodOClockPlaying)
+		{
+		iMdaAudioPlayerUtility->Pause();
+		iPlayerState = EPodOClockPaused;
+		}
+	}
+
+
+void CPodOClockSoundPlayer::ResumePlayback()
+	{
+	TRACER_AUTO;
+	// Resume audio playback
+	if (iMdaAudioPlayerUtility && iPlayerState == EPodOClockPaused)
+		{
+		iMdaAudioPlayerUtility->Play();
+		iPlayerState = EPodOClockPlaying;
+		}
+	}
+
 
 // -----------------------------------------------------------------------------
 // CPodOClockSoundPlayer::PlayerState
@@ -167,14 +209,15 @@ void CPodOClockSoundPlayer::StopPlayback()
 // -----------------------------------------------------------------------------
 //
 TPodOClockPlayerState CPodOClockSoundPlayer::PlayerState()
-    {
-    TRACER_AUTO;
-    return iPlayerState;
-    }
+	{
+	TRACER_AUTO;
+	return iPlayerState;
+	}
+
 
 TInt CPodOClockSoundPlayer::ChangeVolume(TInt aDifference)
-    {
-    TRACER_AUTO;
+	{
+	TRACER_AUTO;
 	TInt volume;
 	TInt error(iMdaAudioPlayerUtility->GetVolume(volume));
 	if (error == KErrNone)
@@ -192,15 +235,47 @@ TInt CPodOClockSoundPlayer::ChangeVolume(TInt aDifference)
 		}
 
 	return iVolume;
-    }
+	}
+
+
+TInt CPodOClockSoundPlayer::GetPosition(TTimeIntervalMicroSeconds& aPosition)
+	{
+	TRACER_AUTO;
+	TInt error(KErrNone);
+	TTimeIntervalMicroSeconds position(0);
+	if (iPlayerState > EPodOClockReadyToPlay)
+		{
+		error = iMdaAudioPlayerUtility->GetPosition(position);
+		}
+	aPosition = position;
+	return error;
+	}
+
+
+void CPodOClockSoundPlayer::SetPosition(TUint aPosition)
+	{
+	TRACER_AUTO;
+	if (iPlayerState == EPodOClockPlaying)
+		{
+		iMdaAudioPlayerUtility->Pause();
+		}
+
+	iMdaAudioPlayerUtility->SetPosition(aPosition);
+
+	if (iPlayerState == EPodOClockPlaying)
+		{
+		iMdaAudioPlayerUtility->Play();
+		}
+	}
+
 
 void CPodOClockSoundPlayer::GetMetaDataL(TDes& aTitle, 
 										 TDes& aAlbum, 
 										 TDes& aArtist, 
 										 TDes& aYear,
-										 TDes& aGenre)
+										 TDes& aComment)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	TInt numEntries(0);
 	User::LeaveIfError(iMdaAudioPlayerUtility->GetNumberOfMetaDataEntries(numEntries));
  
@@ -228,9 +303,9 @@ void CPodOClockSoundPlayer::GetMetaDataL(TDes& aTitle,
 				{
 				aYear.Copy(entry->Value());
 				}
-			else if (entry->Name().CompareF(KMMFMetaEntryGenre) == KErrNone)
+			else if (entry->Name().CompareF(KMMFMetaEntryComment) == KErrNone)
 				{
-				aGenre.Copy(entry->Value());
+				aComment.Copy(entry->Value().Left(KMaxChars));
 				}
 			}
  

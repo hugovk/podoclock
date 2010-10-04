@@ -24,19 +24,18 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 enum TPodOClockIds // Commands for options menus
 	{
-	EPodOClockHide = 0x6001, // start value must not be 0
-	EPodOClockSetAlarm,
-	EPodOClockRemoveAlarm,
-	EPodOClockAbout,
-	EPodOClockQuery
+	EPodOClockCmdHide = 0x6001, // start value must not be 0
+	EPodOClockCmdSetAlarm,
+	EPodOClockCmdRemoveAlarm,
+//	EPodOClockCmdHelp,
+	EPodOClockCmdAbout
 	};
 
-enum TPodOClockPlayerState // State of the audio player
-    {
-    ECENotReady = 0,
-    ECEReadyToPlay,
-    ECEPlaying
-    };
+enum TEPodOClockControls
+	{
+	EPodOClockQuery = 0x7000
+	};
+
 #endif // __PODOCLOCK_HRH__
 
 // End of file
