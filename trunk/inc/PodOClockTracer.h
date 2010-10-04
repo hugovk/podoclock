@@ -33,7 +33,11 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 // 0    = Logging off
 // 1    = Log to RDebug
 // 2    = Log to file (RFileLogger)
+#ifdef _DEBUG
+#define TRACER_LOG_METHOD 2
+#else
 #define TRACER_LOG_METHOD 0
+#endif
 
 // ============================================================================
 
@@ -44,6 +48,9 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
     #define TRACER_RET(func,format)
     #define TRACER_AUTO
     #define TRACER_AUTO_RET
+    #define LOGTEXT(func)
+    #define LOGBUF(func)
+    #define LOGINT(func)
 
 #else                       // Logging on
 
@@ -92,6 +99,12 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
                             KLogFile,EFileLoggingModeAppend,a,&iFunc);
         #define TRACER_PRINT_RET(a,b)   RFileLogger::WriteFormat(KLogDir, \
                             KLogFile,EFileLoggingModeAppend,a,&iFunc,b);
+        #define LOGTEXT(a)           RFileLogger::Write(KLogDir, \
+                            KLogFile,EFileLoggingModeAppend,_L(a));
+        #define LOGBUF(a)            RFileLogger::Write(KLogDir, \
+                            KLogFile,EFileLoggingModeAppend,a);
+        #define LOGINT(a)            RFileLogger::WriteFormat(KLogDir, \
+                            KLogFile,EFileLoggingModeAppend,_L("%d"),a);
 
     #endif
 

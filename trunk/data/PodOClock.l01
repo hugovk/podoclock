@@ -25,12 +25,25 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 rls_string STR_podoclock_caption_string "Pod O'Clock"
 
+// Menu options
 rls_string STR_podoclock_set_alarm "Set alarm"
 rls_string STR_podoclock_remove_alarm "Remove alarm"
-
+//rls_string STR_podoclock_help "Help"
+//rls_string STR_podoclock_help_text "Plays a random podcast when an alarm goes off. Podcasts must MP3 files somewhere under E:\\podcasts\\\n\nKeys\nOK:\tPlay or pause\nLeft:\tBack 5 seconds\nRight:\tSkip\nUp:\tInfo\nDown:\tStop\n*:\tVolume down\n#:\tVolume up\nC:\tRemove alarm, or delete file"
 rls_string STR_podoclock_about "About"
 rls_string STR_podoclock_about_text "Pod O'Clock "
 rls_string STR_podoclock_hide "Hide"
 rls_string STR_podoclock_exit "Exit"
+
+rls_string STR_podoclock_alarm_disclaimer "Alarms are set at owner's risk. The makers of Pod O'Clock cannot be held responsible for tardiness."
+rls_string STR_podoclock_alarm_set "Alarm set: "
+rls_string STR_podoclock_no_alarm_set "No alarm set"
+rls_string STR_podoclock_alarm "Alarm!"
+rls_string STR_podoclock_remove_alarm "Remove alarm?"
+
+rls_string STR_podoclock_alarm_hour_minute "Time left until alarm: %0N hour and %1N minute"
+rls_string STR_podoclock_alarm_hour_minutes "Time left until alarm: %0N hour and %1N minutes"
+rls_string STR_podoclock_alarm_hours_minute "Time left until alarm: %0N hours and %1N minute"
+rls_string STR_podoclock_alarm_hours_minutes "Time left until alarm: %0N hours and %1N minutes"
 
 // End of file

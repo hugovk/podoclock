@@ -66,17 +66,22 @@ RESOURCE MENU_PANE r_podoclock_menu_pane
 		{
 		MENU_ITEM
 				{
-				command = EPodOClockSetAlarm;
+				command = EPodOClockCmdSetAlarm;
 				txt = STR_podoclock_set_alarm;
 				},
 		MENU_ITEM
 				{
-				command = EPodOClockRemoveAlarm;
+				command = EPodOClockCmdRemoveAlarm;
 				txt = STR_podoclock_remove_alarm;
 				},
+/*		MENU_ITEM
+				{
+				command = EPodOClockCmdHelp;
+				txt = STR_podoclock_help;
+				},*/
 		MENU_ITEM
 				{
-				command = EPodOClockAbout;
+				command = EPodOClockCmdAbout;
 				txt = STR_podoclock_about;
 				},
 		MENU_ITEM
@@ -171,8 +176,21 @@ RESOURCE DIALOG r_podoclock_ok_cancel_query_dialog
 		};
 	}
 
+RESOURCE TBUF r_podoclock_help			{buf = STR_podoclock_help;}
+RESOURCE TBUF r_podoclock_help_text		{buf = STR_podoclock_help_text;}
 RESOURCE TBUF r_podoclock_about			{buf = STR_podoclock_about;}
 RESOURCE TBUF r_podoclock_about_text	{buf = STR_podoclock_about_text;}
 RESOURCE TBUF r_podoclock_hide			{buf = STR_podoclock_hide;}
+
+RESOURCE TBUF r_podoclock_alarm_disclaimer	{buf = STR_podoclock_alarm_disclaimer;}
+RESOURCE TBUF r_podoclock_alarm_set			{buf = STR_podoclock_alarm_set;}
+RESOURCE TBUF r_podoclock_no_alarm_set		{buf = STR_podoclock_no_alarm_set;}
+RESOURCE TBUF r_podoclock_alarm				{buf = STR_podoclock_alarm;}
+RESOURCE TBUF r_podoclock_remove_alarm		{buf = STR_podoclock_remove_alarm;}
+
+RESOURCE TBUF r_podoclock_alarm_hour_minute		{ buf = STR_podoclock_alarm_hour_minute; }
+RESOURCE TBUF r_podoclock_alarm_hour_minutes	{ buf = STR_podoclock_alarm_hour_minutes; }
+RESOURCE TBUF r_podoclock_alarm_hours_minute	{ buf = STR_podoclock_alarm_hours_minute; }
+RESOURCE TBUF r_podoclock_alarm_hours_minutes	{ buf = STR_podoclock_alarm_hours_minutes; }
 
 // End of file

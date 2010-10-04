@@ -30,7 +30,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 void CPodOClockAppUi::ConstructL()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	// Initialise app UI with standard value
 	BaseConstructL(CAknAppUi::EAknEnableSkin);
 	
@@ -42,21 +42,21 @@ void CPodOClockAppUi::ConstructL()
 	HBufC* hideText(CCoeEnv::Static()->AllocReadResourceLC(R_PODOCLOCK_HIDE));
 	TInt pos(Cba()->PositionById(EAknSoftkeyExit));
 	Cba()->RemoveCommandFromStack(pos, EAknSoftkeyExit);
-	Cba()->SetCommandL(pos, EPodOClockHide, *hideText);
+	Cba()->SetCommandL(pos, EPodOClockCmdHide, *hideText);
 	CleanupStack::PopAndDestroy(hideText);
 	}
 
 
 CPodOClockAppUi::CPodOClockAppUi()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	// No implementation required
 	}
 
 
 CPodOClockAppUi::~CPodOClockAppUi()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	if (iAppView)
 		{
 		RemoveFromStack(iAppView);
@@ -68,7 +68,7 @@ CPodOClockAppUi::~CPodOClockAppUi()
 
 void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	switch(aCommand)
 		{
 		case EEikCmdExit:
@@ -76,7 +76,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			Exit();
 			break;
 
-		case EPodOClockHide:
+		case EPodOClockCmdHide:
 			{
 			TApaTask task(iEikonEnv->WsSession());
 			task.SetWgId(CEikonEnv::Static()->RootWin().Identifier());
@@ -84,11 +84,11 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			}
 			break;
 
-		case EPodOClockSetAlarm:
+		case EPodOClockCmdSetAlarm:
 			{
 			CAknQueryDialog* dlg(CAknQueryDialog::NewL());
-			if (dlg->ExecuteLD(R_PODOCLOCK_OK_CANCEL_QUERY_DIALOG, 
-_L("Alarms are set at owner's risk. The makers of Pod O'Clock cannot be held responsible for tardiness.")))
+			HBufC* text(iEikonEnv->AllocReadResourceLC(R_PODOCLOCK_ALARM_DISCLAIMER));
+			if (dlg->ExecuteLD(R_PODOCLOCK_OK_CANCEL_QUERY_DIALOG, *text))
 				{
 				TTime time(iAppView->AlarmTime());
 				CAknTimeQueryDialog* dlg(CAknTimeQueryDialog::NewL(time));
@@ -98,14 +98,34 @@ _L("Alarms are set at owner's risk. The makers of Pod O'Clock cannot be held res
 					iAppView->SetAlarmL(time);
 					}
 				}
+			CleanupStack::PopAndDestroy(text);
 			}
 			break;
 
-		case EPodOClockRemoveAlarm:
+		case EPodOClockCmdRemoveAlarm:
 			iAppView->RemoveAlarm();
 			break;
 
-		case EPodOClockAbout:
+/*		case EPodOClockCmdHelp:
+			{
+			// Create the header text
+			HBufC* title(iEikonEnv->AllocReadResourceLC(R_PODOCLOCK_HELP));
+			HBufC* message(iEikonEnv->AllocReadResourceLC(R_PODOCLOCK_HELP_TEXT));
+			
+			CAknMessageQueryDialog* dlg(new(ELeave) CAknMessageQueryDialog());
+			
+			// Initialise the dialog
+			dlg->PrepareLC(R_PODOCLOCK_ABOUT_BOX);
+			dlg->QueryHeading()->SetTextL(*title);
+			dlg->SetMessageTextL(*message);
+			
+			dlg->RunLD();
+			
+			CleanupStack::PopAndDestroy(2); // title, message
+			}
+			break;*/
+
+		case EPodOClockCmdAbout:
 			{
 			// Create the header text
 			HBufC* title1(iEikonEnv->AllocReadResourceLC(R_PODOCLOCK_ABOUT_TEXT));
@@ -137,7 +157,7 @@ _L("Alarms are set at owner's risk. The makers of Pod O'Clock cannot be held res
 
 void CPodOClockAppUi::HandleResourceChangeL(TInt aType)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	// Also call the base class
 	CAknAppUi::HandleResourceChangeL(aType);
 	if (aType == KEikDynamicLayoutVariantSwitch)
@@ -152,11 +172,10 @@ void CPodOClockAppUi::HandleResourceChangeL(TInt aType)
 
 void CPodOClockAppUi::HandleForegroundEventL(TBool aForeground)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	CAknAppUi::HandleForegroundEventL(aForeground);
 	if (aForeground)
 		{
-		//iAppView->UpdateValuesL();
 		iAppView->DrawNow();
 		}
 	}
@@ -164,10 +183,10 @@ void CPodOClockAppUi::HandleForegroundEventL(TBool aForeground)
 
 void CPodOClockAppUi::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	if (aResourceId == R_PODOCLOCK_MENU_PANE)
 		{
-		aMenuPane->SetItemDimmed(EPodOClockRemoveAlarm, !iAppView->AlarmActive());
+		aMenuPane->SetItemDimmed(EPodOClockCmdRemoveAlarm, !iAppView->AlarmActive());
 		}
 	}
 

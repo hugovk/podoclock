@@ -26,8 +26,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include "PodOClockTimer.h"
 
 // CONSTANTS
-const TInt KMaxChars(256);
-_LIT(KVersion, "1.00");
+_LIT(KVersion, "1.10");
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;
@@ -67,7 +66,8 @@ class CPodOClockAppView : public CCoeControl,
 		void TimerExpiredL(TAny* aTimer, TInt aError);
 
 	private: // from MPodOClockSoundPlayerNotify
-		void PlayerStartedL();
+		void PlayerStartedL(TInt aError);
+		void PlayerEndedL();
 
 	private: // Constructors
 		void ConstructL(const TRect& aRect);
@@ -78,19 +78,22 @@ class CPodOClockAppView : public CCoeControl,
 					  const TInt& aY, 
 					  const TRgb& aPenColor) const;
 
-//		void LoadResourceFileTextL();
+		void LoadResourceFileTextL();
 		void LoadSettingsL();
 		void SaveSettingsL();
 
 		void DoChangePaneTextL() const;
 
 		void PlayL(const TDesC& aFileName);
-		void StopL();
+		void Stop();
+		void Pause();
+		void Resume();
 		void ChangeVolume(TInt aDifference);
 		
 	private:
 		// Text from resource files
-//		HBufC* iSomeText;
+		HBufC* iAlarmSetText;
+		HBufC* iNoAlarmSetText;
 
 		const CFont* iFont;
 
@@ -116,7 +119,10 @@ class CPodOClockAppView : public CCoeControl,
 		mutable TBuf<KMaxChars> iAlbum;
 		mutable TBuf<KMaxChars> iArtist;
 		mutable TBuf<KMaxChars> iYear;
-		mutable TBuf<KMaxChars> iGenre;
+		mutable TBuf<KMaxChars> iComment;
+		
+		TInt iCurrentFileNumber;
+		TInt iNumberOfFiles;
 	};
 
 #endif // __PODOCLOCKAPPVIEW_H__

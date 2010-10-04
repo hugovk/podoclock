@@ -28,12 +28,26 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "PodOClock.hrh"
 
+// CONSTANTS
+const TInt KMaxChars(256);
+
+// ENUMERATIONS
+enum TPodOClockPlayerState // State of the audio player
+    {
+    EPodOClockNotReady = 0,
+    EPodOClockReadyToPlay,
+    EPodOClockPlaying,
+    EPodOClockPaused
+    };
+
+
 // CLASS DECLARATION
 
 class MPodOClockSoundPlayerNotify
 	{
 public:
-	virtual void PlayerStartedL() = 0;
+	virtual void PlayerStartedL(TInt aError) = 0;
+	virtual void PlayerEndedL() = 0;
 	};
 
 /**
@@ -104,6 +118,8 @@ class CPodOClockSoundPlayer
         * Stop music playback.
         */
         void StopPlayback();
+        void PausePlayback();
+        void ResumePlayback();
         
         /**
         * Get the state of the audio player.
@@ -112,12 +128,14 @@ class CPodOClockSoundPlayer
         TPodOClockPlayerState PlayerState();
         
         TInt ChangeVolume(TInt aDifference);
+		TInt GetPosition(TTimeIntervalMicroSeconds& aPosition);
+		void SetPosition(TUint aPosition);
         
 		void GetMetaDataL(TDes& aTitle, 
 						  TDes& aAlbum, 
 						  TDes& aArtist, 
 						  TDes& aYear,
-						  TDes& aGenre);
+						  TDes& aComment);
 		
     private:    // Data
         
