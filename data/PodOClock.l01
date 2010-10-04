@@ -39,11 +39,28 @@ rls_string STR_podoclock_alarm_disclaimer "Alarms are set at owner's risk. The m
 rls_string STR_podoclock_alarm_set "Alarm set: "
 rls_string STR_podoclock_no_alarm_set "No alarm set"
 rls_string STR_podoclock_alarm "Alarm!"
-rls_string STR_podoclock_remove_alarm "Remove alarm?"
+rls_string STR_podoclock_remove_alarm_query "Remove alarm?"
 
 rls_string STR_podoclock_alarm_hour_minute "Time left until alarm: %0N hour and %1N minute"
 rls_string STR_podoclock_alarm_hour_minutes "Time left until alarm: %0N hour and %1N minutes"
 rls_string STR_podoclock_alarm_hours_minute "Time left until alarm: %0N hours and %1N minute"
 rls_string STR_podoclock_alarm_hours_minutes "Time left until alarm: %0N hours and %1N minutes"
+
+rls_string STR_podoclock_delete_file "Delete %S?"
+rls_string STR_podoclock_file_deleted "%S deleted"
+rls_string STR_podoclock_file_not_deleted "%S not deleted"
+
+rls_string STR_podoclock_year_format " (%S)"
+rls_string STR_podoclock_x_of_y_format "%d/%d"
+rls_string STR_podoclock_volume "Volume: "
+
+rls_string STR_podoclock_keys1 "OK: Play or pause"
+rls_string STR_podoclock_keys2 "Left: Back 5 seconds"
+rls_string STR_podoclock_keys3 "Right: Skip"
+rls_string STR_podoclock_keys4 "Up: Info"
+rls_string STR_podoclock_keys5 "Down: Stop"
+rls_string STR_podoclock_keys6 "*: Volume down"
+rls_string STR_podoclock_keys7 "#: Volume up"
+rls_string STR_podoclock_keys8 "C: Remove alarm, or delete file"
 
 // End of file

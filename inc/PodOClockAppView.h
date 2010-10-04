@@ -94,6 +94,17 @@ class CPodOClockAppView : public CCoeControl,
 		// Text from resource files
 		HBufC* iAlarmSetText;
 		HBufC* iNoAlarmSetText;
+		HBufC* iVolumeText;
+		HBufC* iYearFormat;
+		HBufC* iXOfYFormat;
+		HBufC* iKeysText1;
+		HBufC* iKeysText2;
+		HBufC* iKeysText3;
+		HBufC* iKeysText4;
+		HBufC* iKeysText5;
+		HBufC* iKeysText6;
+		HBufC* iKeysText7;
+		HBufC* iKeysText8;
 
 		const CFont* iFont;
 
