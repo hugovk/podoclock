@@ -131,11 +131,11 @@ class CPodOClockSoundPlayer
 		TInt GetPosition(TTimeIntervalMicroSeconds& aPosition);
 		void SetPosition(TUint aPosition);
         
-		void GetMetaDataL(TDes& aTitle, 
-						  TDes& aAlbum, 
-						  TDes& aArtist, 
-						  TDes& aYear,
-						  TDes& aComment);
+		void GetMetaDataL(HBufC*& aTitle, 
+						  HBufC*& aAlbum, 
+						  HBufC*& aArtist, 
+						  HBufC*& aYear,
+						  HBufC*& aComment);
 		
     private:    // Data
         

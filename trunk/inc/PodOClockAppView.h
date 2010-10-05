@@ -125,12 +125,12 @@ class CPodOClockAppView : public CCoeControl,
 		TInt iVolume;
 		
 		TFileName iCurrentFileName;
-		mutable TBool iMetaDataFetched;
-		mutable TBuf<KMaxChars> iTitle;
-		mutable TBuf<KMaxChars> iAlbum;
-		mutable TBuf<KMaxChars> iArtist;
-		mutable TBuf<KMaxChars> iYear;
-		mutable TBuf<KMaxChars> iComment;
+//		mutable TBool iMetaDataFetched;
+		HBufC* iTitle;
+		HBufC* iAlbum;
+		HBufC* iArtist;
+		HBufC* iYear;
+		HBufC* iComment;
 		
 		TInt iCurrentFileNumber;
 		TInt iNumberOfFiles;
