@@ -70,7 +70,7 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 	TRACER_AUTO;
 	LoadSettingsL();
 	LoadResourceFileTextL();
-	iMetaDataFetched = EFalse;
+//	iMetaDataFetched = EFalse;
 	
 	// Create a window for this application view
 	CreateWindowL();
@@ -132,6 +132,12 @@ CPodOClockAppView::~CPodOClockAppView()
 	delete iKeysText6;
 	delete iKeysText7;
 	delete iKeysText8;
+	
+	delete iTitle;
+	delete iAlbum;
+	delete iArtist;
+	delete iYear;
+	delete iComment;
 	
 	iNaviContainer->Pop(iNaviLabelDecorator);
 	delete iNaviLabelDecorator;
@@ -221,48 +227,40 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 			metaDataColour = rgbTheme;
 			}
 
-		if (!iMetaDataFetched)
+		if (iTitle)
 			{
-			iTitle.Zero();
-			iAlbum.Zero();
-			iArtist.Zero();
-			iYear.Zero();
-			iComment.Zero();
-			iSoundPlayer->GetMetaDataL(iTitle, iAlbum, iArtist, 
-									   iYear, iComment);
-			iMetaDataFetched = ETrue;
+			DrawText(*iTitle, y, metaDataColour);
+			y += 20;
 			}
-		
-		// Use filename if no title
-		if (iTitle.Length() == 0)
-			{
-			TParse parse;
-			parse.Set(iCurrentFileName, NULL, NULL);
-			iTitle = parse.NameAndExt();
-			}
-		DrawText(iTitle, y, metaDataColour);
-		y += 20;
 
 		// Don't show album if same as title
-		if (iTitle.Compare(iAlbum) != 0)
+		if (iTitle && iAlbum && 
+			iTitle->Compare(*iAlbum) != 0)
 			{
-			DrawText(iAlbum, y, metaDataColour);
+			DrawText(*iAlbum, y, metaDataColour);
 			y += 20;
 			}
 		
 		// Show "Artist (year)"
-		TBuf<KMaxChars> artistAndYear(iArtist);
-		if (iYear.Length() > 0)
+		TBuf<KMaxChars> artistAndYear;
+		if (iArtist)
+			{
+			artistAndYear.Append(*iArtist);
+			}
+		if (iYear)
 			{
 			TBuf<KMaxChars> year;
-			year.Format(*iYearFormat, &iYear);
+			year.Format(*iYearFormat, iYear);
 			artistAndYear.Append(year);
 			}
 		DrawText(artistAndYear, y, metaDataColour);
 		y += 20;
 		
-		DrawText(iComment, y, metaDataColour);
-		y += 20;
+		if (iComment)
+			{
+			DrawText(*iComment, y, metaDataColour);
+			y += 20;
+			}
 
 		TBuf<KMaxChars> countOfTotal;
 		countOfTotal.Format(*iXOfYFormat, iCurrentFileNumber, iNumberOfFiles);
@@ -359,16 +357,19 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 
 		// Show info
 		case EKeyUpArrow:
-			if ((iSoundPlayer->PlayerState() > EPodOClockReadyToPlay) &&
-				(iComment.Length() > 0))
+			if (iSoundPlayer->PlayerState() > EPodOClockReadyToPlay &&
+				iComment && iComment->Length() > 0)
 				{
 				// Create the header text
 				CAknMessageQueryDialog* dlg(new(ELeave) CAknMessageQueryDialog());
 				
 				// Initialise the dialog
 				dlg->PrepareLC(R_PODOCLOCK_ABOUT_BOX);
-				dlg->QueryHeading()->SetTextL(iTitle);
-				dlg->SetMessageTextL(iComment);
+				if (iTitle)
+					{
+					dlg->QueryHeading()->SetTextL(*iTitle);
+					}
+				dlg->SetMessageTextL(*iComment);
 				
 				dlg->RunLD();
 				}
@@ -405,24 +406,22 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 				CleanupStack::PopAndDestroy(text);
 				}
 
-				if (!removeAlarm && iCurrentFileName.Length() > 0)
+			if (!removeAlarm && iCurrentFileName.Length() > 0)
+				{
+				TBuf<KMaxChars> question;
+				HBufC* format(
+					CEikonEnv::Static()->AllocReadResourceLC(
+						R_PODOCLOCK_DELETE_FILE));
+				question.Format(*format, &iTitle);
+				CleanupStack::PopAndDestroy(format);
+
+				CAknQueryDialog* dlg(CAknQueryDialog::NewL());
+				if (dlg->ExecuteLD(R_PODOCLOCK_YES_NO_QUERY_DIALOG, 
+												 question))
 					{
-
-
-					TBuf<KMaxChars> question;
-					HBufC* format(
-						CEikonEnv::Static()->AllocReadResourceLC(
-							R_PODOCLOCK_DELETE_FILE));
-					question.Format(*format, &iTitle);
-					CleanupStack::PopAndDestroy(format);
-
-					CAknQueryDialog* dlg(CAknQueryDialog::NewL());
-					if (dlg->ExecuteLD(R_PODOCLOCK_YES_NO_QUERY_DIALOG, 
-													 question))
-						{
-						DeleteFileL();
-						}
+					DeleteFileL();
 					}
+				}
 			}
 			break;
 
@@ -594,7 +593,7 @@ void CPodOClockAppView::PlayRandomFileL()
 
 		if (bytes > 0)
 			{
-			iCurrentFileNumber = random;
+			iCurrentFileNumber = random + 1;
 			iNumberOfFiles = dirList->Count();
 			iCurrentFileName = totalPath;
 			LOGTEXT("PlayL");
@@ -650,7 +649,7 @@ void CPodOClockAppView::Stop()
 		{
 		iSoundPlayer->StopPlayback();
 		}
-	iMetaDataFetched = EFalse;
+//	iMetaDataFetched = EFalse;
 	}
 
 
@@ -680,7 +679,6 @@ void CPodOClockAppView::LoadSettingsL()
 	{
 	TRACER_AUTO;
 	TInt volume(KVolume);
-//	iVolume = KVolume;
 	TBool alarmOn(EFalse);
 	TTime alarmTime(KDefaultAlarmTime);
 	
@@ -824,8 +822,38 @@ void CPodOClockAppView::PlayerStartedL(TInt aError)
 		thing.AppendNum(aError);
 		CEikonEnv::Static()->InfoMsg(thing);
 		}
+	else
 #endif
 
+	if (aError == KErrNone)
+		{
+//		if (!iMetaDataFetched)
+			{
+			delete iTitle;
+			iTitle = NULL;
+			delete iAlbum;
+			iAlbum = NULL;
+			delete iArtist;
+			iArtist = NULL;
+			delete iYear;
+			iYear = NULL;
+			delete iComment;
+			iComment = NULL;
+			iSoundPlayer->GetMetaDataL(iTitle, iAlbum, iArtist, 
+									   iYear, iComment);
+
+			// Use filename if no title
+			if (iTitle == NULL)
+				{
+				TParse parse;
+				parse.Set(iCurrentFileName, NULL, NULL);
+				iTitle = parse.NameAndExt().AllocL();
+				}
+			
+//			iMetaDataFetched = ETrue;
+			}
+		}
+	
 	DrawDeferred();
 	}
 

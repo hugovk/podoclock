@@ -269,11 +269,11 @@ void CPodOClockSoundPlayer::SetPosition(TUint aPosition)
 	}
 
 
-void CPodOClockSoundPlayer::GetMetaDataL(TDes& aTitle, 
-										 TDes& aAlbum, 
-										 TDes& aArtist, 
-										 TDes& aYear,
-										 TDes& aComment)
+void CPodOClockSoundPlayer::GetMetaDataL(HBufC*& aTitle, 
+										 HBufC*& aAlbum, 
+										 HBufC*& aArtist, 
+										 HBufC*& aYear,
+										 HBufC*& aComment)
 	{
 	TRACER_AUTO;
 	TInt numEntries(0);
@@ -289,23 +289,28 @@ void CPodOClockSoundPlayer::GetMetaDataL(TDes& aTitle,
 			{
 			if (entry->Name().CompareF(KMMFMetaEntrySongTitle) == KErrNone)
 				{
-				aTitle.Copy(entry->Value());
+				delete aTitle;
+				aTitle = entry->Value().AllocL();
 				}
 			else if (entry->Name().CompareF(KMMFMetaEntryAlbum) == KErrNone)
 				{
-				aAlbum.Copy(entry->Value());
+				delete aAlbum;
+				aAlbum = entry->Value().AllocL();
 				}
 			else if (entry->Name().CompareF(KMMFMetaEntryArtist) == KErrNone)
 				{
-				aArtist.Copy(entry->Value());
+				delete aArtist;
+				aArtist = entry->Value().AllocL();
 				}
 			else if (entry->Name().CompareF(KMMFMetaEntryYear) == KErrNone)
 				{
-				aYear.Copy(entry->Value());
+				delete aYear;
+				aYear = entry->Value().AllocL();
 				}
 			else if (entry->Name().CompareF(KMMFMetaEntryComment) == KErrNone)
 				{
-				aComment.Copy(entry->Value().Left(KMaxChars));
+				delete aComment;
+				aComment = entry->Value().AllocL();
 				}
 			}
  
