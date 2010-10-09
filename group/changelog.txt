@@ -1,0 +1,32 @@
+Version 1.10 09.10.2010
+
+Added more keys:
+    OK: Play or pause
+    Left: Jump back 5 seconds
+    Up: Info
+    Down: Stop
+When the alarm goes off, turn backlight on and bring to foreground
+Unmute when a new track starts
+When playing, don't show album name if the same as the title
+When playing, show mp3 comment instead of genre 
+When playing, show x/total
+When not playing, show keys info
+Skip 0 byte files
+Changed the file finding to find all *.mp3s under E:\podcasts\ instead of just those under E:\podcasts\sounds\, so it works with Symbian Podcatcher
+Load more strings from the loc file
+Fixed a crash when skipping tracks forward quickly
+
+Version 1.00 20.09.2010
+
+Plays a random podcast when an alarm goes off.
+
+Podcasts must MP3 files somewhere under E:\podcasts\ 
+
+Keys: 
+OK: Play or stop 
+Right: Skip 
+* or up arrow: Volume up 
+# or down arrow: Volume down 
+C: Remove alarm, or delete file
+
+Thanks to the Tango Desktop Project for the icon.
