@@ -26,12 +26,12 @@ CPodOClockTimer::CPodOClockTimer(const TInt aPriority,
 									   MPodOClockTimerNotify& aNotify)
 :CActive(aPriority), iNotify(aNotify)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	}
 
 CPodOClockTimer::~CPodOClockTimer()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	Cancel();
 	iTimer.Close();
 	}
@@ -39,25 +39,25 @@ CPodOClockTimer::~CPodOClockTimer()
 CPodOClockTimer* CPodOClockTimer::NewL(const TInt aPriority,
 											 MPodOClockTimerNotify& aNotify)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	CPodOClockTimer* timer(new (ELeave) CPodOClockTimer(aPriority, 
 																aNotify));
 	CleanupStack::PushL(timer);
 	timer->ConstructL();
 	CleanupStack::Pop();
-    return timer;
+	return timer;
 	}
 
 void CPodOClockTimer::ConstructL(void)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	CActiveScheduler::Add(this);
 	iTimer.CreateLocal();
 	}
 
 void CPodOClockTimer::At(const TTime& aTime)
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	Cancel();
 	iTimer.At(iStatus, aTime);
 	SetActive();
@@ -65,13 +65,13 @@ void CPodOClockTimer::At(const TTime& aTime)
 
 void CPodOClockTimer::DoCancel()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	iTimer.Cancel();
 	}
  
 void CPodOClockTimer::RunL()
 	{
-    TRACER_AUTO;
+	TRACER_AUTO;
 	iNotify.TimerExpiredL(this, iStatus.Int());
 	}
 

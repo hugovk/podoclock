@@ -148,10 +148,9 @@ void CPodOClockSoundPlayer::StartPlaybackL(const TDesC& aFileName)
 	{
 	TRACER_AUTO;
 	// Open the sound file
-	if (iPlayerState > EPodOClockReadyToPlay)
-		{
-		StopPlayback();
-		}
+	LOGINT(iPlayerState);
+	StopPlayback();
+	LOGBUF(aFileName);
 	iMdaAudioPlayerUtility->OpenFileL(aFileName);
 	}
 
@@ -165,12 +164,9 @@ void CPodOClockSoundPlayer::StopPlayback()
 	{
 	TRACER_AUTO;
 	// Stop audio playback and close the audio file
-	if (iMdaAudioPlayerUtility && iPlayerState > EPodOClockReadyToPlay)
-		{
-		iMdaAudioPlayerUtility->Stop();
-		iMdaAudioPlayerUtility->Close();
-		iPlayerState = EPodOClockNotReady;
-		}
+	iMdaAudioPlayerUtility->Stop();
+	iMdaAudioPlayerUtility->Close();
+	iPlayerState = EPodOClockNotReady;
 	}
 
 
@@ -183,7 +179,7 @@ void CPodOClockSoundPlayer::PausePlayback()
 	{
 	TRACER_AUTO;
 	// Pause audio playback
-	if (iMdaAudioPlayerUtility && iPlayerState == EPodOClockPlaying)
+	if (iPlayerState == EPodOClockPlaying)
 		{
 		iMdaAudioPlayerUtility->Pause();
 		iPlayerState = EPodOClockPaused;
@@ -195,7 +191,7 @@ void CPodOClockSoundPlayer::ResumePlayback()
 	{
 	TRACER_AUTO;
 	// Resume audio playback
-	if (iMdaAudioPlayerUtility && iPlayerState == EPodOClockPaused)
+	if (iPlayerState == EPodOClockPaused)
 		{
 		iMdaAudioPlayerUtility->Play();
 		iPlayerState = EPodOClockPlaying;
@@ -279,10 +275,12 @@ void CPodOClockSoundPlayer::GetMetaDataL(HBufC*& aTitle,
 	TInt numEntries(0);
 	User::LeaveIfError(iMdaAudioPlayerUtility->GetNumberOfMetaDataEntries(numEntries));
  
+	TInt error;
+	CMMFMetaDataEntry* entry(NULL);
 	for (TInt i(0); i < numEntries; ++i)
 		{
-		CMMFMetaDataEntry* entry(NULL);
-		TRAPD(error, entry = iMdaAudioPlayerUtility->GetMetaDataEntryL(i));
+		entry = NULL;
+		TRAP(error, entry = iMdaAudioPlayerUtility->GetMetaDataEntryL(i));
 		CleanupStack::PushL(entry);
  
 		if (error == KErrNone)
@@ -313,9 +311,9 @@ void CPodOClockSoundPlayer::GetMetaDataL(HBufC*& aTitle,
 				aComment = entry->Value().AllocL();
 				}
 			}
- 
-		CleanupStack::PopAndDestroy(entry);
+		CleanupStack::Pop(entry);
 		}
+	delete entry;
 	}
 
 //  End of file

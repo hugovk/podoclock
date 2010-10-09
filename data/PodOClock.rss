@@ -20,7 +20,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //  RESOURCE IDENTIFIER
-NAME POOK    // 4 letter ID
+NAME POOK // 4 letter ID
 
 
 //  INCLUDES
@@ -171,6 +171,41 @@ RESOURCE DIALOG r_podoclock_ok_cancel_query_dialog
 				{
 				layout = EConfirmationQueryLayout;
 				animation = R_QGN_NOTE_WARNING_ANIM;
+				};
+			}
+		};
+	}
+
+RESOURCE DIALOG r_podoclock_time_query_dialog
+	{
+	flags = EGeneralQueryFlags;
+	buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+	items =
+		{
+		DLG_LINE
+			{
+			type = EAknCtQuery;
+			id = EGeneralQuery;
+			control = AVKON_DATA_QUERY
+				{
+				layout = ETimeLayout;
+				label = STR_podoclock_time;
+				control = TIME_EDITOR
+					{
+					minTime = TIME
+						{
+						second = 0;
+						minute = 0;
+						hour = 0;
+						};
+					maxTime = TIME
+						{
+						second = 59;
+						minute = 59;
+						hour = 23;
+						};
+					flags = EEikTimeWithoutSecondsField;
+					};
 				};
 			}
 		};

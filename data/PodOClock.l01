@@ -36,6 +36,7 @@ rls_string STR_podoclock_hide "Hide"
 rls_string STR_podoclock_exit "Exit"
 
 rls_string STR_podoclock_alarm_disclaimer "Alarms are set at owner's risk. The makers of Pod O'Clock cannot be held responsible for tardiness."
+rls_string STR_podoclock_time "Time:"
 rls_string STR_podoclock_alarm_set "Alarm set: "
 rls_string STR_podoclock_no_alarm_set "No alarm set"
 rls_string STR_podoclock_alarm "Alarm!"
