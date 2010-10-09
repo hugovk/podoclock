@@ -26,7 +26,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 CPodOClockDocument* CPodOClockDocument::NewL(CEikApplication& aApp)
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	CPodOClockDocument* self(NewLC(aApp));
 	CleanupStack::Pop(self);
 	return self;
@@ -34,7 +34,7 @@ CPodOClockDocument* CPodOClockDocument::NewL(CEikApplication& aApp)
 
 CPodOClockDocument* CPodOClockDocument::NewLC(CEikApplication& aApp)
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	CPodOClockDocument* self(new (ELeave) CPodOClockDocument(aApp));
 	
 	CleanupStack::PushL(self);
@@ -44,26 +44,26 @@ CPodOClockDocument* CPodOClockDocument::NewLC(CEikApplication& aApp)
 
 void CPodOClockDocument::ConstructL()
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	// No implementation required
 	}
 
 CPodOClockDocument::CPodOClockDocument(CEikApplication& aApp)
 	: CAknDocument(aApp)
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	// No implementation required
 	}
 
 CPodOClockDocument::~CPodOClockDocument()
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	// No implementation required
 	}
 
 CEikAppUi* CPodOClockDocument::CreateAppUiL()
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	return (static_cast <CEikAppUi*> (new (ELeave) CPodOClockAppUi));
 	}
 

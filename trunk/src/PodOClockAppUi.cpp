@@ -92,7 +92,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 				{
 				TTime time(iAppView->AlarmTime());
 				CAknTimeQueryDialog* dlg(CAknTimeQueryDialog::NewL(time));
-				dlg->PrepareLC(R_AVKON_DIALOG_QUERY_VALUE_TIME);
+				dlg->PrepareLC(R_PODOCLOCK_TIME_QUERY_DIALOG);
 				if (dlg->RunLD())
 					{
 					iAppView->SetAlarmL(time);

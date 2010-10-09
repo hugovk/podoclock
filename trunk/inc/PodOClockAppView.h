@@ -90,6 +90,8 @@ class CPodOClockAppView : public CCoeControl,
 		void Resume();
 		void ChangeVolume(TInt aDifference);
 		
+		void FindFiles(TFindFile& aFinder, const TDesC& aDir);
+		
 	private:
 		// Text from resource files
 		HBufC* iAlarmSetText;
@@ -118,22 +120,27 @@ class CPodOClockAppView : public CCoeControl,
 		TTime iAlarmTime;
 		CPodOClockTimer* iAlarmTimer;
 
-        TInt64 iSeed;
+		TInt64 iSeed;
 		
-        // Sound player for playing audio files (owned) 
-        CPodOClockSoundPlayer* iSoundPlayer;
+		// Sound player for playing audio files (owned) 
+		CPodOClockSoundPlayer* iSoundPlayer;
 		TInt iVolume;
 		
+		// For finding files
+		CDir* iFoundFiles;
+		TFileName iFoundFile;
+		RArray<TFileName> iFileArray;
+		
+		// For keeping track of the playing track
 		TFileName iCurrentFileName;
-//		mutable TBool iMetaDataFetched;
+		TInt iCurrentFileNumber;
+		TInt iNumberOfFiles;
+		
 		HBufC* iTitle;
 		HBufC* iAlbum;
 		HBufC* iArtist;
 		HBufC* iYear;
 		HBufC* iComment;
-		
-		TInt iCurrentFileNumber;
-		TInt iNumberOfFiles;
 	};
 
 #endif // __PODOCLOCKAPPVIEW_H__

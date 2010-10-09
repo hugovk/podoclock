@@ -45,6 +45,7 @@ const TInt KMaxVolume(10);
 _LIT(KSettingsFile, "c:settings.dat");
 const TInt KSettingsFileVersion(1);
 _LIT(KDefaultAlarmTime, "070000."); // "HHMMSS."
+_LIT(KWildcard, "*.mp3");
 
 CPodOClockAppView* CPodOClockAppView::NewL(const TRect& aRect)
 	{
@@ -70,7 +71,6 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 	TRACER_AUTO;
 	LoadSettingsL();
 	LoadResourceFileTextL();
-//	iMetaDataFetched = EFalse;
 	
 	// Create a window for this application view
 	CreateWindowL();
@@ -408,19 +408,20 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 
 			if (!removeAlarm && iCurrentFileName.Length() > 0)
 				{
-				TBuf<KMaxChars> question;
 				HBufC* format(
 					CEikonEnv::Static()->AllocReadResourceLC(
 						R_PODOCLOCK_DELETE_FILE));
-				question.Format(*format, &iTitle);
-				CleanupStack::PopAndDestroy(format);
+				HBufC* question(HBufC::NewLC(iTitle->Length() + format->Length()));
+				question->Des().Format(*format, iTitle);
 
 				CAknQueryDialog* dlg(CAknQueryDialog::NewL());
 				if (dlg->ExecuteLD(R_PODOCLOCK_YES_NO_QUERY_DIALOG, 
-												 question))
+												 *question))
 					{
 					DeleteFileL();
 					}
+				CleanupStack::PopAndDestroy(question);
+				CleanupStack::PopAndDestroy(format);
 				}
 			}
 			break;
@@ -532,12 +533,15 @@ void CPodOClockAppView::DeleteFileL()
 		iCurrentFileName.Zero();
 		}
 
-	TBuf<KMaxChars> confirmation;
-	HBufC* format(CEikonEnv::Static()->AllocReadResourceLC(resourceId));
-	confirmation.Format(*format, &iTitle);
-	CleanupStack::PopAndDestroy(format);
+	HBufC* format(
+		CEikonEnv::Static()->AllocReadResourceLC(resourceId));
+	HBufC* confirmation(HBufC::NewLC(format->Length() + iTitle->Length()));
+	confirmation->Des().Format(*format, iTitle);
 
-	note->ExecuteLD(confirmation);
+	note->ExecuteLD(*confirmation);
+
+	CleanupStack::PopAndDestroy(confirmation);
+	CleanupStack::PopAndDestroy(format);
 	}
 
 
@@ -545,71 +549,79 @@ void CPodOClockAppView::PlayRandomFileL()
 	{
 	TRACER_AUTO;
 	Stop();
-	
-#ifdef __WINS__
-	_LIT(KDirName, "C:\\podcasts\\sounds\\");
-	_LIT(KFileSpec,"C:\\podcasts\\sounds\\*.mp3");
-#else
-	_LIT(KDirName, "E:\\podcasts\\sounds\\");
-	_LIT(KFileSpec,"E:\\podcasts\\sounds\\*.mp3");
-#endif
 
 	// Connect to the file server
-	RFs fileSession;
-	fileSession.Connect();
-	CleanupClosePushL(fileSession);
+	RFs fs;
+	fs.Connect();
+	CleanupClosePushL(fs);
 
-	// Get the file list, sorted by name
-	LOGTEXT("Get the file list, sorted by name");
-	CDir* dirList;
-	User::LeaveIfError(
-		fileSession.GetDir(KFileSpec,
-						   KEntryAttMaskSupported,
-						   ESortNone,
-						   dirList));
-	CleanupStack::PushL(dirList);
-	
-	TInt bytes(0);
-	TInt attemptsLeft(10);
-	TInt maxVal(dirList->Count());
-	LOGTEXT("maxVal");			LOGINT(maxVal);
-	TEntry entry;
-	LOGTEXT("bytes");			LOGINT(bytes);
+	// Get the file list
+	LOGTEXT("Get the file list");
 
-	while ((bytes == 0) && (attemptsLeft > 0))
+#ifdef __WINS__
+	_LIT(KPodcastPath, "C:\\Podcasts\\");
+#else
+	_LIT(KPodcastPath, "E:\\Podcasts\\");
+#endif
+
+	iFileArray.Reset();
+	CDirScan* scan(CDirScan::NewLC(fs));
+	scan->SetScanDataL(KPodcastPath, KEntryAttNormal, ESortNone);
+	TInt error(KErrNone);
+	CDir* dirList(NULL);
+	TFindFile finder(fs);
+	FOREVER
 		{
-		// Find a random file
-		TInt random(Math::Rand(iSeed) % maxVal);
-		LOGTEXT("random");			LOGINT(random);
-		
-		TBuf<KMaxFileName> fileName((*dirList)[random].iName);
-		TBuf<KMaxFileName> totalPath(KDirName);
-		totalPath.Append(fileName);
-		LOGBUF(totalPath);
-		
-		// Check it's bigger than 0 bytes
-		bytes = (*dirList)[random].iSize;
-		LOGTEXT("bytes");			LOGINT(bytes);
-
-		if (bytes > 0)
+		TRAP(error, scan->NextL(dirList));
+		if (error | !dirList)
 			{
-			iCurrentFileNumber = random + 1;
-			iNumberOfFiles = dirList->Count();
-			iCurrentFileName = totalPath;
-			LOGTEXT("PlayL");
-			PlayL(iCurrentFileName);
+			break;
 			}
-		else
+		FindFiles(finder, scan->FullPath());
+		};
+	delete dirList;
+	CleanupStack::PopAndDestroy(scan);
+	
+	// Select a random file
+	iNumberOfFiles = iFileArray.Count();
+	LOGTEXT("iNumberOfFiles");
+	LOGINT(iNumberOfFiles);
+
+	TInt random(Math::Rand(iSeed) % iNumberOfFiles);
+	LOGTEXT("random");
+	LOGINT(random);
+
+	iCurrentFileNumber = random + 1;
+	iCurrentFileName = iFileArray[random];
+	iFileArray.Reset();
+	LOGTEXT("PlayL");
+	LOGBUF(iCurrentFileName);
+	PlayL(iCurrentFileName);
+
+	CleanupStack::PopAndDestroy(); // fs
+	DrawDeferred();
+	}
+
+
+void CPodOClockAppView::FindFiles(TFindFile& aFinder, const TDesC& aDir)
+	{
+	TInt error(aFinder.FindWildByDir(KWildcard, aDir, iFoundFiles));
+	if (error == KErrNone)
+		{
+		for (TInt i(0); i < iFoundFiles->Count(); ++i)
 			{
-			--attemptsLeft;
-			LOGTEXT("attemptsLeft");	LOGINT(attemptsLeft);
+//			LOGINT((*iFoundFiles)[i].iSize);
+//			LOGTEXT("bytes");
+			// Don't bother with zero byte files
+			if ((*iFoundFiles)[i].iSize > 0)
+				{
+				iFoundFile = aDir;
+				iFoundFile.Append((*iFoundFiles)[i].iName);
+//				LOGBUF(iFoundFile);
+				iFileArray.Append(iFoundFile);
+				}
 			}
 		}
-
-	// Close the connection with the file server
-	// and destroy dirList
-	CleanupStack::PopAndDestroy(2); // fileSession, dirList
-	DrawDeferred();
 	}
 
 
@@ -649,7 +661,6 @@ void CPodOClockAppView::Stop()
 		{
 		iSoundPlayer->StopPlayback();
 		}
-//	iMetaDataFetched = EFalse;
 	}
 
 
@@ -817,7 +828,7 @@ void CPodOClockAppView::PlayerStartedL(TInt aError)
 #ifdef _DEBUG
 	if (aError != KErrNone)
 		{
-		TBuf<KMaxChars> thing(iCurrentFileName);
+		TFileName thing(iCurrentFileName);
 		thing.Append(_L(" "));
 		thing.AppendNum(aError);
 		CEikonEnv::Static()->InfoMsg(thing);
@@ -827,30 +838,31 @@ void CPodOClockAppView::PlayerStartedL(TInt aError)
 
 	if (aError == KErrNone)
 		{
-//		if (!iMetaDataFetched)
+		// Unmute when new tracks start
+		if (iSoundPlayer->Volume() == 0)
 			{
-			delete iTitle;
-			iTitle = NULL;
-			delete iAlbum;
-			iAlbum = NULL;
-			delete iArtist;
-			iArtist = NULL;
-			delete iYear;
-			iYear = NULL;
-			delete iComment;
-			iComment = NULL;
-			iSoundPlayer->GetMetaDataL(iTitle, iAlbum, iArtist, 
-									   iYear, iComment);
+			iVolume = iSoundPlayer->ChangeVolume(+1);
+			}
 
-			// Use filename if no title
-			if (iTitle == NULL)
-				{
-				TParse parse;
-				parse.Set(iCurrentFileName, NULL, NULL);
-				iTitle = parse.NameAndExt().AllocL();
-				}
-			
-//			iMetaDataFetched = ETrue;
+		delete iTitle;
+		iTitle = NULL;
+		delete iAlbum;
+		iAlbum = NULL;
+		delete iArtist;
+		iArtist = NULL;
+		delete iYear;
+		iYear = NULL;
+		delete iComment;
+		iComment = NULL;
+		iSoundPlayer->GetMetaDataL(iTitle, iAlbum, iArtist, 
+								   iYear, iComment);
+
+		// Use filename if no title
+		if (iTitle == NULL)
+			{
+			TParse parse;
+			parse.Set(iCurrentFileName, NULL, NULL);
+			iTitle = parse.NameAndExt().AllocL();
 			}
 		}
 	

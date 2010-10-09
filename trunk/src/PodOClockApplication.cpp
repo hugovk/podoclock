@@ -29,7 +29,7 @@ const TUid KUidPodOClockApp = {0xA89FB98E};
 
 CApaDocument* CPodOClockApplication::CreateDocumentL()
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	// Create an PodOClock document, and return a pointer to it
 	return (static_cast<CApaDocument*>
 					(CPodOClockDocument::NewL(*this)));
@@ -38,7 +38,7 @@ CApaDocument* CPodOClockApplication::CreateDocumentL()
 
 TUid CPodOClockApplication::AppDllUid() const
 	{
-//    TRACER_AUTO;
+//	TRACER_AUTO;
 	// Return the UID for the PodOClock application
 	return KUidPodOClockApp;
 	}
