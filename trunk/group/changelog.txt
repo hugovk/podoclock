@@ -1,4 +1,16 @@
-Version 1.10 09.10.2010
+Pod O'Clock version 1.20 15.11.2010
+
+Added simple touchscreen support:
+    Added stuff controlled by keys to menu options
+    Added remote support: side volume keys, back, play/pause, skip
+Ask to repeat alarm when playing complete.
+Set/reset alarm.
+Show track info in an about box.
+Show hh:mm:ss or mm:ss.
+Nokia N8/Symbian^3 max volume support.
+Default volume to half max volume.
+
+Pod O'Clock version 1.10 09.10.2010
 
 Added more keys:
     OK: Play or pause
@@ -16,7 +28,7 @@ Changed the file finding to find all *.mp3s under E:\podcasts\ instead of just t
 Load more strings from the loc file
 Fixed a crash when skipping tracks forward quickly
 
-Version 1.00 20.09.2010
+Pod O'Clock version 1.00 20.09.2010
 
 Plays a random podcast when an alarm goes off.
 
