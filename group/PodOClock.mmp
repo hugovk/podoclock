@@ -75,6 +75,8 @@ LIBRARY			euser.lib
 LIBRARY			gdi.lib
 LIBRARY			mediaclientaudio.lib
 LIBRARY			mmfcontrollerframework.lib
+LIBRARY			RemConCoreApi.lib
+LIBRARY			RemConInterfaceBase.lib
 LIBRARY			ws32.lib
 
 DEBUGLIBRARY	flogger.lib

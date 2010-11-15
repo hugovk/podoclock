@@ -117,12 +117,17 @@ void CPodOClockSoundPlayer::MapcInitComplete(
 	// Start the playback, if audio file initialisation was successful
 	if (iPlayerState == EPodOClockReadyToPlay)
 		{
+		if (iVolume == KErrUnknown)
+			{
+			iVolume = MaxVolume() / 2;
+			}
+
 		iMdaAudioPlayerUtility->SetVolume(iVolume);
 		iMdaAudioPlayerUtility->Play();
 		iPlayerState = EPodOClockPlaying;
 //		iNotify.PlayerStartedL();
 		}
-	iNotify.PlayerStartedL(aError);
+	iNotify.PlayerStartedL(aError, iVolume);
 	}
 
 
@@ -211,6 +216,26 @@ TPodOClockPlayerState CPodOClockSoundPlayer::PlayerState()
 	}
 
 
+TInt CPodOClockSoundPlayer::Volume()
+	{
+	TRACER_AUTO;
+	TInt volume(iVolume);
+	TInt error(iMdaAudioPlayerUtility->GetVolume(volume));
+	if (error == KErrNone)
+		{
+		iVolume = volume;
+		}
+	return iVolume;
+	}
+
+
+TInt CPodOClockSoundPlayer::MaxVolume() const
+	{
+	TRACER_AUTO;
+	return iMdaAudioPlayerUtility->MaxVolume();
+	}
+
+
 TInt CPodOClockSoundPlayer::ChangeVolume(TInt aDifference)
 	{
 	TRACER_AUTO;
@@ -218,16 +243,16 @@ TInt CPodOClockSoundPlayer::ChangeVolume(TInt aDifference)
 	TInt error(iMdaAudioPlayerUtility->GetVolume(volume));
 	if (error == KErrNone)
 		{
-		volume += aDifference;
-		
-		if ((volume >= 0) && (volume <= iMdaAudioPlayerUtility->MaxVolume()))
+		TInt maxVolume(MaxVolume());
+		if (aDifference > 0)	// up
 			{
-			error = iMdaAudioPlayerUtility->SetVolume(volume);
-			if (error == KErrNone)
-				{
-				iVolume = volume;
-				}
+			iVolume = Min(volume + (maxVolume / 10), maxVolume);
 			}
+		else					// down
+			{
+			iVolume = Max(volume - (maxVolume / 10), 0);
+			}
+		iMdaAudioPlayerUtility->SetVolume(iVolume);
 		}
 
 	return iVolume;
@@ -262,6 +287,14 @@ void CPodOClockSoundPlayer::SetPosition(TUint aPosition)
 		{
 		iMdaAudioPlayerUtility->Play();
 		}
+	}
+
+
+TInt CPodOClockSoundPlayer::DurationInSeconds()
+	{
+	TRACER_AUTO;
+	TTimeIntervalMicroSeconds duration(iMdaAudioPlayerUtility->Duration());
+	return (duration.Int64() / 1000000);
 	}
 
 

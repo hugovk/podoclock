@@ -26,7 +26,15 @@ enum TPodOClockIds // Commands for options menus
 	{
 	EPodOClockCmdHide = 0x6001, // start value must not be 0
 	EPodOClockCmdSetAlarm,
+	EPodOClockCmdResetAlarm,
 	EPodOClockCmdRemoveAlarm,
+	EPodOClockCmdPlayTrack,
+	EPodOClockCmdPauseTrack,
+	EPodOClockCmdBackTrack,
+	EPodOClockCmdSkipTrack,
+	EPodOClockCmdStopTrack,
+	EPodOClockCmdTrackInfo,
+	EPodOClockCmdDeleteFile,
 //	EPodOClockCmdHelp,
 	EPodOClockCmdAbout
 	};

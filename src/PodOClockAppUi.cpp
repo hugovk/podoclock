@@ -31,9 +31,16 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 void CPodOClockAppUi::ConstructL()
 	{
 	TRACER_AUTO;
+
+	// To handle media keys
+	iInterfaceSelector = CRemConInterfaceSelector::NewL();
+	iCoreTarget = CRemConCoreApiTarget::NewL(*iInterfaceSelector, *this);
+	iInterfaceSelector->OpenTargetL();
+
 	// Initialise app UI with standard value
 	BaseConstructL(CAknAppUi::EAknEnableSkin);
-	
+	//AknsUtils::InitSkinSupportL();
+
 	// Create view object
 	iAppView = CPodOClockAppView::NewL(ClientRect());
 	AddToStackL(iAppView);
@@ -63,6 +70,7 @@ CPodOClockAppUi::~CPodOClockAppUi()
 		delete iAppView;
 		iAppView = NULL;
 		}
+	delete iInterfaceSelector;
 	}
 
 
@@ -85,10 +93,24 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			break;
 
 		case EPodOClockCmdSetAlarm:
+		case EPodOClockCmdResetAlarm:
 			{
-			CAknQueryDialog* dlg(CAknQueryDialog::NewL());
-			HBufC* text(iEikonEnv->AllocReadResourceLC(R_PODOCLOCK_ALARM_DISCLAIMER));
-			if (dlg->ExecuteLD(R_PODOCLOCK_OK_CANCEL_QUERY_DIALOG, *text))
+			TBool showDisclaimer(ETrue);
+			if (iAppView->AlarmActive())
+				{
+				showDisclaimer = EFalse;
+				}
+			
+			TBool showAlarmDialog(ETrue);
+			if (showDisclaimer)
+				{
+				CAknQueryDialog* dlg(CAknQueryDialog::NewL());
+				HBufC* text(iEikonEnv->AllocReadResourceLC(R_PODOCLOCK_ALARM_DISCLAIMER));
+				showAlarmDialog = dlg->ExecuteLD(R_PODOCLOCK_OK_CANCEL_QUERY_DIALOG, *text);
+				CleanupStack::PopAndDestroy(text);
+				}
+			
+			if (showAlarmDialog)
 				{
 				TTime time(iAppView->AlarmTime());
 				CAknTimeQueryDialog* dlg(CAknTimeQueryDialog::NewL(time));
@@ -98,12 +120,46 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 					iAppView->SetAlarmL(time);
 					}
 				}
-			CleanupStack::PopAndDestroy(text);
 			}
 			break;
 
 		case EPodOClockCmdRemoveAlarm:
 			iAppView->RemoveAlarm();
+			break;
+
+		case EPodOClockCmdPlayTrack:
+			if (iAppView->Paused())
+				{
+				iAppView->Resume();
+				}
+			else
+				{
+				iAppView->PlayRandomFileL();
+				}
+			break;
+
+		case EPodOClockCmdPauseTrack:
+			iAppView->Pause();
+			break;
+
+		case EPodOClockCmdBackTrack:
+			iAppView->BackFiveSeconds();
+			break;
+
+		case EPodOClockCmdSkipTrack:
+			iAppView->PlayRandomFileL();
+			break;
+
+		case EPodOClockCmdStopTrack:
+			iAppView->Stop();
+			break;
+
+		case EPodOClockCmdTrackInfo:
+			iAppView->ShowTrackInfoL();
+			break;
+
+		case EPodOClockCmdDeleteFile:
+			iAppView->AskDeleteFileL();
 			break;
 
 /*		case EPodOClockCmdHelp:
@@ -152,6 +208,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 		default:
 			break;
 		}
+	iAppView->DrawDeferred();
 	}
 
 
@@ -184,9 +241,184 @@ void CPodOClockAppUi::HandleForegroundEventL(TBool aForeground)
 void CPodOClockAppUi::DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane)
 	{
 	TRACER_AUTO;
+	TBool alarmActive(iAppView->AlarmActive());
+	TBool playing(iAppView->Playing());
+	TBool paused(iAppView->Paused());
 	if (aResourceId == R_PODOCLOCK_MENU_PANE)
 		{
-		aMenuPane->SetItemDimmed(EPodOClockCmdRemoveAlarm, !iAppView->AlarmActive());
+		// Shown when alarm not active
+		aMenuPane->SetItemDimmed(EPodOClockCmdSetAlarm, alarmActive);
+
+		// Shown when alarm active
+		aMenuPane->SetItemDimmed(EPodOClockCmdResetAlarm,  !alarmActive);
+		aMenuPane->SetItemDimmed(EPodOClockCmdRemoveAlarm, !alarmActive);
+
+		// Show when track info available
+		aMenuPane->SetItemDimmed(EPodOClockCmdTrackInfo, !iAppView->TrackInfoAvailable());
+
+		// Show when track playing
+		aMenuPane->SetItemDimmed(EPodOClockCmdPauseTrack, !playing);
+
+		// Show when track playing or paused
+		aMenuPane->SetItemDimmed(EPodOClockCmdBackTrack, !playing && !paused);
+		aMenuPane->SetItemDimmed(EPodOClockCmdSkipTrack, !playing && !paused);
+		aMenuPane->SetItemDimmed(EPodOClockCmdStopTrack, !playing && !paused);
+
+		// Show when track not playing
+		aMenuPane->SetItemDimmed(EPodOClockCmdPlayTrack, playing);
+
+		// Show when current/last file name known
+		aMenuPane->SetItemDimmed(EPodOClockCmdDeleteFile, !iAppView->FileNameKnown());
+		}
+	}
+
+// ----------------------------------------------------------------------------
+// MrccatoCommand()
+// Receives events (press/click/release) from the following buttons:
+// ’Play/Pause’, ’Volume Up’, ’Volume Down’, ’Stop’, ’Rewind’, ’Forward’
+// ----------------------------------------------------------------------------
+void CPodOClockAppUi::MrccatoCommand(TRemConCoreApiOperationId aOperationId,
+									 TRemConCoreApiButtonAction aButtonAct)
+	{
+	TRequestStatus status;
+	switch (aOperationId)
+		{
+		case ERemConCoreApiVolumeUp:
+			{
+			switch (aButtonAct)
+				{
+				case ERemConCoreApiButtonPress:
+					break;
+				case ERemConCoreApiButtonRelease:
+					break;
+				case ERemConCoreApiButtonClick:
+					iAppView->ChangeVolumeL(+1);
+					break;
+				default:
+					break;
+				}
+			iCoreTarget->VolumeUpResponse(status, KErrNone);
+			User::WaitForRequest(status);
+			break;
+			}
+		case ERemConCoreApiVolumeDown:
+			{
+			switch (aButtonAct)
+				{
+				case ERemConCoreApiButtonPress:
+					break;
+				case ERemConCoreApiButtonRelease:
+					break;
+				case ERemConCoreApiButtonClick:
+					iAppView->ChangeVolumeL(-1);
+					break;
+				default:
+					break;
+				}
+			iCoreTarget->VolumeDownResponse(status, KErrNone);
+			User::WaitForRequest(status);
+			break;
+			}
+ 		case ERemConCoreApiPausePlayFunction:
+			{
+			LOGTEXT("ERemConCoreApiPausePlayFunction");
+			switch (aButtonAct)
+				{
+				case ERemConCoreApiButtonPress:
+					break;
+				case ERemConCoreApiButtonRelease:
+					break;
+				case ERemConCoreApiButtonClick:
+					iAppView->SelectL();
+					break;
+				default:
+					break;
+				}
+			iCoreTarget->PausePlayFunctionResponse(status, KErrNone);
+			User::WaitForRequest(status);
+			break;
+			}
+		case ERemConCoreApiStop:
+			{
+			LOGTEXT("ERemConCoreApiStop");
+			switch (aButtonAct)
+				{
+				case ERemConCoreApiButtonPress:
+					break;
+				case ERemConCoreApiButtonRelease:
+					break;
+				case ERemConCoreApiButtonClick:
+					iAppView->Stop();
+					break;
+				default:
+					break;
+				}
+			iCoreTarget->StopResponse(status, KErrNone);
+			User::WaitForRequest(status);
+			break;
+			}
+  		case ERemConCoreApiBackward:
+			{
+			LOGTEXT("ERemConCoreApiBackward");
+			switch (aButtonAct)
+				{
+				case ERemConCoreApiButtonPress:
+					break;
+				case ERemConCoreApiButtonRelease:
+					break;
+				case ERemConCoreApiButtonClick:
+					iAppView->BackFiveSeconds();
+					break;
+				default:
+					break;
+				}
+			iCoreTarget->BackwardResponse(status, KErrNone);
+			User::WaitForRequest(status);
+			break;
+			}
+ 		case ERemConCoreApiForward:
+			{
+			LOGTEXT("ERemConCoreApiForward");
+			switch (aButtonAct)
+				{
+				case ERemConCoreApiButtonPress:
+					break;
+				case ERemConCoreApiButtonRelease:
+					break;
+				case ERemConCoreApiButtonClick:
+					iAppView->PlayRandomFileL();
+					break;
+				default:
+					break;
+				}
+			iCoreTarget->ForwardResponse(status, KErrNone);
+			User::WaitForRequest(status);
+			break;
+			}
+		case ERemConCoreApiRewind:
+			{
+			LOGTEXT("ERemConCoreApiRewind");
+/*			switch (aButtonAct)
+				{
+				}
+			iCoreTarget->RewindResponse(status, KErrNone);
+			User::WaitForRequest(status);*/
+			break;
+			}
+ 		case ERemConCoreApiFastForward:
+			{
+			LOGTEXT("ERemConCoreApiFastForward");
+/*			switch (aButtonAct)
+				{
+				// see above for possible actions
+				}
+			iCoreTarget->FastForwardResponse(status, KErrNone);
+			User::WaitForRequest(status);*/
+			break;
+			}
+
+		default:
+			break;
 		}
 	}
 
