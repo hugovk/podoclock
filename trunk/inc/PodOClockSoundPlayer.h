@@ -46,7 +46,7 @@ enum TPodOClockPlayerState // State of the audio player
 class MPodOClockSoundPlayerNotify
 	{
 public:
-	virtual void PlayerStartedL(TInt aError) = 0;
+	virtual void PlayerStartedL(TInt aError, TInt aVolume) = 0;
 	virtual void PlayerEndedL() = 0;
 	};
 
@@ -106,14 +106,14 @@ class CPodOClockSoundPlayer
 		*/
 		void MapcPlayComplete(TInt aError);
 
-	public:	 // New functions
+	public: // New functions
 
 		/**
 		* Open music file and start music playback.
 		* @param aFileName Path and file name of the audio file
 		*/
 		void StartPlaybackL(const TDesC& aFileName);
-				
+		
 		/**
 		* Stop music playback.
 		*/
@@ -127,10 +127,12 @@ class CPodOClockSoundPlayer
 		*/
 		TPodOClockPlayerState PlayerState();
 		
-		TInt Volume() { return iVolume; }
+		TInt Volume();
+		TInt MaxVolume() const;
 		TInt ChangeVolume(TInt aDifference);
 		TInt GetPosition(TTimeIntervalMicroSeconds& aPosition);
 		void SetPosition(TUint aPosition);
+		TInt DurationInSeconds();
 		
 		void GetMetaDataL(HBufC*& aTitle, 
 						  HBufC*& aAlbum, 

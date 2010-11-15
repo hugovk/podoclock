@@ -23,7 +23,7 @@
 &EN
 
 ; Standard SIS file header
-#{"Pod O'Clock"}, (0xA89FB98E),1,10,0
+#{"Pod O'Clock"}, (0xA89FB98E),1,20,0
 
 ; Localised Vendor name
 %{"Pod O'Clock"}
@@ -35,10 +35,10 @@
 [0x101F7961], 0, 0, 0, {"S60ProductID"}
 
 ; Supports S60 release 5.0
-; [0x1028315F], 0, 0, 0, {"S60ProductID"}
+[0x1028315F], 0, 0, 0, {"S60ProductID"}
 
 ; Supports Symbian^3
-; [0x20022E6D], 0, 0, 0, {"S60ProductID"}
+[0x20022E6D], 0, 0, 0, {"S60ProductID"}
 
 ; Files to install
 "..\..\epoc32\release\gcce\urel\PodOClock.exe" - "!:\sys\bin\PodOClock.exe"

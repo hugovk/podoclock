@@ -27,7 +27,15 @@ rls_string STR_podoclock_caption_string "Pod O'Clock"
 
 // Menu options
 rls_string STR_podoclock_set_alarm "Set alarm"
+rls_string STR_podoclock_reset_alarm "Reset alarm"
 rls_string STR_podoclock_remove_alarm "Remove alarm"
+rls_string STR_podoclock_play_track "Play"
+rls_string STR_podoclock_pause_track "Pause"
+rls_string STR_podoclock_back_track "Back 5 seconds"
+rls_string STR_podoclock_skip_track "Skip"
+rls_string STR_podoclock_stop_track "Stop"
+rls_string STR_podoclock_track_info "Track info"
+rls_string STR_podoclock_delete_file "Delete file"
 //rls_string STR_podoclock_help "Help"
 //rls_string STR_podoclock_help_text "Plays a random podcast when an alarm goes off. Podcasts must MP3 files somewhere under E:\\podcasts\\\n\nKeys\nOK:\tPlay or pause\nLeft:\tBack 5 seconds\nRight:\tSkip\nUp:\tInfo\nDown:\tStop\n*:\tVolume down\n#:\tVolume up\nC:\tRemove alarm, or delete file"
 rls_string STR_podoclock_about "About"
@@ -47,9 +55,9 @@ rls_string STR_podoclock_alarm_hour_minutes "Time left until alarm: %0N hour and
 rls_string STR_podoclock_alarm_hours_minute "Time left until alarm: %0N hours and %1N minute"
 rls_string STR_podoclock_alarm_hours_minutes "Time left until alarm: %0N hours and %1N minutes"
 
-rls_string STR_podoclock_delete_file "Delete %S?"
+rls_string STR_podoclock_delete_file_query "Delete %S?"
 rls_string STR_podoclock_file_deleted "%S deleted"
-rls_string STR_podoclock_file_not_deleted "%S not deleted"
+rls_string STR_podoclock_file_not_deleted "Not deleted (%d)"
 
 rls_string STR_podoclock_year_format " (%S)"
 rls_string STR_podoclock_x_of_y_format "%d/%d"
@@ -63,5 +71,7 @@ rls_string STR_podoclock_keys5 "Down: Stop"
 rls_string STR_podoclock_keys6 "*: Volume down"
 rls_string STR_podoclock_keys7 "#: Volume up"
 rls_string STR_podoclock_keys8 "C: Remove alarm, or delete file"
+
+rls_string STR_podoclock_same_time_tomorrow "Same time tomorrow?"
 
 // End of file

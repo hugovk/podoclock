@@ -26,17 +26,16 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include "PodOClockTimer.h"
 
 // CONSTANTS
-_LIT(KVersion, "1.10");
+_LIT(KVersion, "1.20");
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;
 class CAknNavigationDecorator;
-class CPodOClockSoundPlayer;
 
 // CLASS DECLARATION
 class CPodOClockAppView : public CCoeControl,
-						MPodOClockSoundPlayerNotify,
-						MPodOClockTimerNotify
+						public MPodOClockSoundPlayerNotify,
+						public MPodOClockTimerNotify
 	{
 
 	public: // New methods
@@ -48,13 +47,26 @@ class CPodOClockAppView : public CCoeControl,
 		void Draw(const TRect& aRect) const;
 
 	public: // New methods
-		void SetAlarmL(const TTime aTime);
+		void SetAlarmL(const TTime aTime, const TBool aShowConfirmation = ETrue);
 		void RemoveAlarm();
+		void AskRepeatAlarmL();
+		void BackFiveSeconds();
+		void AskDeleteFileL();
 		void DeleteFileL();
 		void SelectL();
 		void PlayRandomFileL();
 		TBool AlarmActive() const { return iAlarmTimer ? iAlarmTimer->IsActive() : EFalse; }
 		TTime AlarmTime() const { return iAlarmTime; }
+		void ChangeVolumeL(TInt aDifference);
+//		void SetVolume(TInt aVolume);
+		TBool TrackInfoAvailable();
+		void ShowTrackInfoL();
+		TBool Playing() const { return iSoundPlayer->PlayerState() == EPodOClockPlaying; }
+		TBool Paused() const { return iSoundPlayer->PlayerState() == EPodOClockPaused; }
+		TBool FileNameKnown() const { return iCurrentFileName.Length() > 0; }
+		void Stop();
+		void Pause();
+		void Resume();
 
 	private: // from CCoeControl
 		virtual void SizeChanged();
@@ -66,10 +78,10 @@ class CPodOClockAppView : public CCoeControl,
 		void TimerExpiredL(TAny* aTimer, TInt aError);
 
 	private: // from MPodOClockSoundPlayerNotify
-		void PlayerStartedL(TInt aError);
+		void PlayerStartedL(TInt aError, TInt aVolume);
 		void PlayerEndedL();
 
-	private: // Constructors
+		private: // Constructors
 		void ConstructL(const TRect& aRect);
 		CPodOClockAppView();
 
@@ -85,10 +97,6 @@ class CPodOClockAppView : public CCoeControl,
 		void DoChangePaneTextL() const;
 
 		void PlayL(const TDesC& aFileName);
-		void Stop();
-		void Pause();
-		void Resume();
-		void ChangeVolume(TInt aDifference);
 		
 		void FindFiles(TFindFile& aFinder, const TDesC& aDir);
 		
@@ -141,6 +149,11 @@ class CPodOClockAppView : public CCoeControl,
 		HBufC* iArtist;
 		HBufC* iYear;
 		HBufC* iComment;
+		TUint iHours;
+		TUint iMinutes;
+		TUint iSeconds;
+
+		TBool iAskRepeat;
 	};
 
 #endif // __PODOCLOCKAPPVIEW_H__

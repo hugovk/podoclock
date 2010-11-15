@@ -39,13 +39,13 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 // CONSTANTS
 const TInt KMargin(10);
 const TRgb KRgbNow(KRgbYellow);
-const TInt KVolume(5);
-const TInt KMaxVolume(10);
+const TInt KVolume(KErrUnknown);
 
 _LIT(KSettingsFile, "c:settings.dat");
 const TInt KSettingsFileVersion(1);
 _LIT(KDefaultAlarmTime, "070000."); // "HHMMSS."
 _LIT(KWildcard, "*.mp3");
+_LIT(KPercent, "%");
 
 CPodOClockAppView* CPodOClockAppView::NewL(const TRect& aRect)
 	{
@@ -103,6 +103,7 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 	// Activate the window, which makes it ready to be drawn
 	ActivateL();
 	iRectWidth = Size().iWidth - (2 * KMargin);
+	iAskRepeat = EFalse;
 	}
 
 
@@ -262,6 +263,20 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 			y += 20;
 			}
 
+		TBuf<KMaxChars> duration;
+		if (iHours >= 1)
+			{
+			_LIT(KHoursMinutesSecondsFormat, "%02d:%02d:%02d");
+			duration.AppendFormat(KHoursMinutesSecondsFormat, iHours, iMinutes, iSeconds);
+			}
+		else
+			{
+			_LIT(KMinutesSecondsFormat, "%02d:%02d");
+			duration.AppendFormat(KMinutesSecondsFormat, iMinutes, iSeconds);
+			}
+		DrawText(duration, y, metaDataColour);
+		y += 20;
+
 		TBuf<KMaxChars> countOfTotal;
 		countOfTotal.Format(*iXOfYFormat, iCurrentFileNumber, iNumberOfFiles);
 		DrawText(countOfTotal, y, rgbTheme);
@@ -269,7 +284,8 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 		y += 20;
 
 		TBuf<KMaxChars> volume(*iVolumeText);
-		volume.AppendNum(iVolume);
+		volume.AppendNum(100 * iVolume / iSoundPlayer->MaxVolume());
+		volume.Append(KPercent);
 		DrawText(volume, y, rgbTheme);
 		}
 	else // not playing/paused
@@ -291,6 +307,7 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 void CPodOClockAppView::SizeChanged()
 	{
 	TRACER_AUTO;
+	iRectWidth = Size().iWidth - (2 * KMargin);
 	DrawDeferred();
 	}
 
@@ -314,40 +331,24 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 	
 	switch (aKeyEvent.iCode)
 		{
-		 // Play or stop
+		 // Play or pause
 		case EKeyDevice3: // OK key
 			SelectL();
 			break;
 
 		// Volume down
 		case '*':
-			iVolume = iSoundPlayer->ChangeVolume(-1);
-			SaveSettingsL();
+			ChangeVolumeL(-1);
 			break;
 
 		// Volume up
 		case '#':
-			iVolume = iSoundPlayer->ChangeVolume(+1);
-			SaveSettingsL();
+			ChangeVolumeL(+1);
 			break;
 
 		// Back 5 seconds
 		case EKeyLeftArrow:
-			{
-			TTimeIntervalMicroSeconds position(0);
-			TInt error(iSoundPlayer->GetPosition(position));
-			if (error == KErrNone)
-				{
-				TUint difference(5 * 1000000);
-				TUint newPosition(0);
-				if (difference < position.Int64())
-					{
-					newPosition = position.Int64() - difference;
-					}
-				
-				iSoundPlayer->SetPosition(newPosition);
-				}
-			}
+			BackFiveSeconds();
 			break;
 
 		// Skip
@@ -357,27 +358,14 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 
 		// Show info
 		case EKeyUpArrow:
-			if (iSoundPlayer->PlayerState() > EPodOClockReadyToPlay &&
-				iComment && iComment->Length() > 0)
-				{
-				// Create the header text
-				CAknMessageQueryDialog* dlg(new(ELeave) CAknMessageQueryDialog());
-				
-				// Initialise the dialog
-				dlg->PrepareLC(R_PODOCLOCK_ABOUT_BOX);
-				if (iTitle)
-					{
-					dlg->QueryHeading()->SetTextL(*iTitle);
-					}
-				dlg->SetMessageTextL(*iComment);
-				
-				dlg->RunLD();
-				}
+			ShowTrackInfoL();
 			break;
 
 		// Stop
 		case EKeyDownArrow:
 			Stop();
+			DrawDeferred();
+			AskRepeatAlarmL();
 			break;
 
 		// Remove alarm, or delete file
@@ -406,22 +394,9 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 				CleanupStack::PopAndDestroy(text);
 				}
 
-			if (!removeAlarm && iCurrentFileName.Length() > 0)
+			if (!removeAlarm)
 				{
-				HBufC* format(
-					CEikonEnv::Static()->AllocReadResourceLC(
-						R_PODOCLOCK_DELETE_FILE));
-				HBufC* question(HBufC::NewLC(iTitle->Length() + format->Length()));
-				question->Des().Format(*format, iTitle);
-
-				CAknQueryDialog* dlg(CAknQueryDialog::NewL());
-				if (dlg->ExecuteLD(R_PODOCLOCK_YES_NO_QUERY_DIALOG, 
-												 *question))
-					{
-					DeleteFileL();
-					}
-				CleanupStack::PopAndDestroy(question);
-				CleanupStack::PopAndDestroy(format);
+				AskDeleteFileL();
 				}
 			}
 			break;
@@ -440,7 +415,7 @@ TKeyResponse CPodOClockAppView::OfferKeyEventL(const TKeyEvent& aKeyEvent,
 	}
 
 
-void CPodOClockAppView::SetAlarmL(const TTime aTime)
+void CPodOClockAppView::SetAlarmL(const TTime aTime, const TBool aShowConfirmation)
 	{
 	TRACER_AUTO;
 	TDateTime alarmDateTime(aTime.DateTime());
@@ -472,37 +447,40 @@ void CPodOClockAppView::SetAlarmL(const TTime aTime)
 	CEikonEnv::Static()->InfoMsg(_L("Alarm set"));
 #endif
 	
-	TTimeIntervalMinutes minutesInterval;
-	iAlarmTime.MinutesFrom(now, minutesInterval);
-	TInt hours(minutesInterval.Int() / 60);
-	TInt minutes(minutesInterval.Int() - (hours * 60));
-	CAknInformationNote* note(new (ELeave) CAknInformationNote(ETrue));
+	if (aShowConfirmation)
+		{
+		TTimeIntervalMinutes minutesInterval;
+		iAlarmTime.MinutesFrom(now, minutesInterval);
+		TInt hours(minutesInterval.Int() / 60);
+		TInt minutes(minutesInterval.Int() - (hours * 60));
+		CAknInformationNote* note(new (ELeave) CAknInformationNote(ETrue));
+		
+		TInt resourceId(R_PODOCLOCK_ALARM_HOURS_MINUTES);
+		if (hours == 1 && minutes == 1)
+			{
+			resourceId = R_PODOCLOCK_ALARM_HOUR_MINUTE;
+			}
+		else if (hours == 1 && minutes != 1)
+			{
+			resourceId = R_PODOCLOCK_ALARM_HOUR_MINUTES;
+			}
+		else if (hours != 1 && minutes == 1)
+			{
+			resourceId = R_PODOCLOCK_ALARM_HOURS_MINUTE;
+			}
+
+		CArrayFix<TInt>* integers(new (ELeave) CArrayFixFlat<TInt>(2));
+		CleanupStack::PushL(integers);
+		integers->AppendL(hours);
+		integers->AppendL(minutes);
+		HBufC* confirmationText(StringLoader::LoadLC(resourceId, *integers));
+
+		note->ExecuteLD(*confirmationText);
+		CleanupStack::PopAndDestroy(confirmationText); 
+		CleanupStack::PopAndDestroy(integers);
+		}
 	
-	TInt resourceId(R_PODOCLOCK_ALARM_HOURS_MINUTES);
-	if (hours == 1 && minutes == 1)
-		{
-		resourceId = R_PODOCLOCK_ALARM_HOUR_MINUTE;
-		}
-	else if (hours == 1 && minutes != 1)
-		{
-		resourceId = R_PODOCLOCK_ALARM_HOUR_MINUTES;
-		}
-	else if (hours != 1 && minutes == 1)
-		{
-		resourceId = R_PODOCLOCK_ALARM_HOURS_MINUTE;
-		}
-	
-
-	CArrayFix<TInt>* integers(new (ELeave) CArrayFixFlat<TInt>(2));
-	CleanupStack::PushL(integers);
-	integers->AppendL(hours);
-	integers->AppendL(minutes);
-	HBufC* confirmationText(StringLoader::LoadLC(resourceId, *integers));
-
-	note->ExecuteLD(*confirmationText);
-	CleanupStack::PopAndDestroy(confirmationText); 
-	CleanupStack::PopAndDestroy(integers);
-
+	DrawDeferred();
 	SaveSettingsL();
 	}
 
@@ -514,7 +492,66 @@ void CPodOClockAppView::RemoveAlarm()
 		{
 		iAlarmTimer->Cancel();
 		CAknInformationNote* note(new (ELeave) CAknInformationNote(ETrue));
-		note->ExecuteLD(_L("Alarm removed"));
+		note->ExecuteLD(_L("Alarm removed")); // TODO localise
+		SaveSettingsL();
+		}
+	}
+
+
+void CPodOClockAppView::AskRepeatAlarmL()
+	{
+	if (iAskRepeat)
+		{
+		iAskRepeat = EFalse;
+		CAknQueryDialog* dlg(CAknQueryDialog::NewL());
+		HBufC* text(StringLoader::LoadLC(R_PODOCLOCK_SAME_TIME_TOMORROW));
+		if (dlg->ExecuteLD(R_PODOCLOCK_YES_NO_QUERY_DIALOG, *text))
+			{
+			SetAlarmL(iAlarmTime);
+			}
+		CleanupStack::PopAndDestroy(text);
+		}
+	}
+
+
+void CPodOClockAppView::BackFiveSeconds()
+	{
+	TRACER_AUTO;
+	TTimeIntervalMicroSeconds position(0);
+	TInt error(iSoundPlayer->GetPosition(position));
+	if (error == KErrNone)
+		{
+		TUint difference(5 * 1000000);
+		TUint newPosition(0);
+		if (difference < position.Int64())
+			{
+			newPosition = position.Int64() - difference;
+			}
+		
+		iSoundPlayer->SetPosition(newPosition);
+		}
+	}
+
+
+void CPodOClockAppView::AskDeleteFileL()
+	{
+	TRACER_AUTO;
+	if (iCurrentFileName.Length() > 0)
+		{
+		HBufC* format(
+			CEikonEnv::Static()->AllocReadResourceLC(
+				R_PODOCLOCK_DELETE_FILE_QUERY));
+		HBufC* question(HBufC::NewLC(iTitle->Length() + format->Length()));
+		question->Des().Format(*format, iTitle);
+
+		CAknQueryDialog* dlg(CAknQueryDialog::NewL());
+		if (dlg->ExecuteLD(R_PODOCLOCK_YES_NO_QUERY_DIALOG, 
+										 *question))
+			{
+			DeleteFileL();
+			}
+		CleanupStack::PopAndDestroy(question);
+		CleanupStack::PopAndDestroy(format);
 		}
 	}
 
@@ -526,18 +563,24 @@ void CPodOClockAppView::DeleteFileL()
 	TInt error(CCoeEnv::Static()->FsSession().Delete(iCurrentFileName));
 
 	CAknInformationNote* note(new (ELeave) CAknInformationNote(ETrue));
-	TInt resourceId(R_PODOCLOCK_FILE_NOT_DELETED);
-	if (error == KErrNone)
+
+	HBufC* format(NULL);
+	HBufC* confirmation;
+	if (error == KErrNone || error == KErrNotFound)
 		{
-		resourceId = R_PODOCLOCK_FILE_DELETED;
 		iCurrentFileName.Zero();
+		format = CEikonEnv::Static()->AllocReadResourceLC(R_PODOCLOCK_FILE_DELETED);
+		confirmation = HBufC::NewLC(format->Length() + iTitle->Length());
+		confirmation->Des().Format(*format, iTitle);
 		}
-
-	HBufC* format(
-		CEikonEnv::Static()->AllocReadResourceLC(resourceId));
-	HBufC* confirmation(HBufC::NewLC(format->Length() + iTitle->Length()));
-	confirmation->Des().Format(*format, iTitle);
-
+	else
+		{
+		format = CEikonEnv::Static()->AllocReadResourceLC(R_PODOCLOCK_FILE_NOT_DELETED);
+		
+		confirmation = HBufC::NewLC(format->Length() + 6); // lowest error value ~= -XXXXX
+		confirmation->Des().Format(*format, error);
+		}
+	
 	note->ExecuteLD(*confirmation);
 
 	CleanupStack::PopAndDestroy(confirmation);
@@ -587,6 +630,14 @@ void CPodOClockAppView::PlayRandomFileL()
 	LOGTEXT("iNumberOfFiles");
 	LOGINT(iNumberOfFiles);
 
+	if (iNumberOfFiles < 1)
+		{
+		// Nothing to play
+		CAknInformationNote* note(new (ELeave) CAknInformationNote(ETrue));
+		note->ExecuteLD(_L("No podcasts found")); // TODO localise: "No [KWildcard] podcasts found under [KPodcastPath]"
+		return;
+		}
+	
 	TInt random(Math::Rand(iSeed) % iNumberOfFiles);
 	LOGTEXT("random");
 	LOGINT(random);
@@ -719,11 +770,10 @@ void CPodOClockAppView::LoadSettingsL()
 	iVolume = volume;
 	iAlarmTime = alarmTime;
 
-/* 	if (alarmOn)
+ 	if (alarmOn)
 		{
-		SetAlarmL(iAlarmTime); // TODO
+		SetAlarmL(iAlarmTime, EFalse);
 		}
- */
 	}
 
 
@@ -806,6 +856,8 @@ void CPodOClockAppView::TimerExpiredL(TAny* aTimer, TInt aError)
 		CleanupStack::PopAndDestroy(text);
 		PlayRandomFileL();
 		SaveSettingsL();
+		
+		iAskRepeat = ETrue;
 		}
 	
 	// When the system time changes, At() timers will complete immediately with
@@ -821,10 +873,15 @@ void CPodOClockAppView::TimerExpiredL(TAny* aTimer, TInt aError)
 		}
 	}
 
-void CPodOClockAppView::PlayerStartedL(TInt aError)
+
+void CPodOClockAppView::PlayerStartedL(TInt aError, TInt aVolume)
 	{
 	TRACER_AUTO;
 	LOGINT(aError);
+	
+	iVolume = aVolume;
+	SaveSettingsL();
+	
 #ifdef _DEBUG
 	if (aError != KErrNone)
 		{
@@ -841,7 +898,7 @@ void CPodOClockAppView::PlayerStartedL(TInt aError)
 		// Unmute when new tracks start
 		if (iSoundPlayer->Volume() == 0)
 			{
-			iVolume = iSoundPlayer->ChangeVolume(+1);
+			ChangeVolumeL(+1);
 			}
 
 		delete iTitle;
@@ -864,10 +921,21 @@ void CPodOClockAppView::PlayerStartedL(TInt aError)
 			parse.Set(iCurrentFileName, NULL, NULL);
 			iTitle = parse.NameAndExt().AllocL();
 			}
+
+		iSeconds = iSoundPlayer->DurationInSeconds();
+		iMinutes = iSeconds / 60;
+		iSeconds = iSeconds - (iMinutes * 60);
+		iHours = iMinutes / 60;
+		
+		if (iMinutes >= 60)
+			{
+			iMinutes -= (iHours * 60);
+			}
 		}
 	
 	DrawDeferred();
 	}
+
 
 void CPodOClockAppView::PlayerEndedL()
 	{
@@ -876,6 +944,56 @@ void CPodOClockAppView::PlayerEndedL()
 	CEikonEnv::Static()->InfoMsg(_L("MapcPlayComplete"));
 #endif
 	DrawDeferred();
+	AskRepeatAlarmL();
 	}
+
+
+void CPodOClockAppView::ChangeVolumeL(TInt aDifference)
+	{
+	TRACER_AUTO;
+#ifdef _DEBUG
+	CEikonEnv::Static()->InfoMsg(_L("ChangeVolume"));
+#endif
+	iVolume = iSoundPlayer->ChangeVolume(aDifference);
+	SaveSettingsL();
+	DrawDeferred();
+	}
+
+
+TBool CPodOClockAppView::TrackInfoAvailable()
+	{
+	TRACER_AUTO;
+	if (iSoundPlayer->PlayerState() > EPodOClockReadyToPlay &&
+		iComment && iComment->Length() > 0)
+		{
+		return ETrue;
+		}
+	else
+		{
+		return EFalse;
+		}
+	}
+
+
+void CPodOClockAppView::ShowTrackInfoL()
+	{
+	TRACER_AUTO;
+	if (TrackInfoAvailable())
+		{
+		// Create the header text
+		CAknMessageQueryDialog* dlg(new(ELeave) CAknMessageQueryDialog());
+		
+		// Initialise the dialog
+		dlg->PrepareLC(R_PODOCLOCK_ABOUT_BOX);
+		if (iTitle)
+			{
+			dlg->QueryHeading()->SetTextL(*iTitle);
+			}
+		dlg->SetMessageTextL(*iComment);
+		
+		dlg->RunLD();
+		}
+	}
+
 
 // End of file
