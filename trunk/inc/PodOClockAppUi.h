@@ -24,16 +24,12 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 // INCLUDES
 #include <aknappui.h>
-#include <remconcoreapitargetobserver.h>    // link against RemConCoreApi.lib
-#include <remconcoreapitarget.h>            // and
-#include <remconinterfaceselector.h>        // RemConInterfaceBase.lib
 
 // FORWARD DECLARATIONS
 class CPodOClockAppView;
 
 // CLASS DECLARATION
-class CPodOClockAppUi : public CAknAppUi,
-						public MRemConCoreApiTargetObserver
+class CPodOClockAppUi : public CAknAppUi
 	{
 	public: // Constructors and destructor
 		void ConstructL();
@@ -48,15 +44,9 @@ class CPodOClockAppUi : public CAknAppUi,
 	private: // from CAknView
 		void DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane);
 
-	private: // from MRemConCoreApiTargetObserver
-	void MrccatoCommand(TRemConCoreApiOperationId aOperationId,
-						TRemConCoreApiButtonAction aButtonAct);
-
 	private: // Data
 		CPodOClockAppView* iAppView;
 
-		CRemConInterfaceSelector* iInterfaceSelector;
-		CRemConCoreApiTarget*     iCoreTarget;
 	};
 
 #endif // __PODOCLOCKAPPUI_H__

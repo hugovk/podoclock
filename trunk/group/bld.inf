@@ -23,11 +23,14 @@ PRJ_PLATFORMS
 DEFAULT
 
 PRJ_EXPORTS
+// ECom plugin interface
+..\inc\PodOClockTouchFeedbackInterface.h	podoclock\PodOClockTouchFeedbackInterface.h
 
 PRJ_MMPFILES
 
 gnumakefile icons_scalable_dc.mk
 
 PodOClock.mmp
+..\touchfeedback\group\PodOClockTouchFeedback.mmp
 
 // End of file

@@ -64,42 +64,6 @@ RESOURCE MENU_PANE r_podoclock_menu_pane
 	{
 	items =
 		{
-		// Track stuff:
-		MENU_ITEM
-				{
-				command = EPodOClockCmdTrackInfo;
-				txt = STR_podoclock_track_info;
-				},
-		MENU_ITEM
-				{
-				command = EPodOClockCmdPlayTrack;
-				txt = STR_podoclock_play_track;
-				},
-		MENU_ITEM
-				{
-				command = EPodOClockCmdPauseTrack;
-				txt = STR_podoclock_pause_track;
-				},
-		MENU_ITEM
-				{
-				command = EPodOClockCmdBackTrack;
-				txt = STR_podoclock_back_track;
-				},
-		MENU_ITEM
-				{
-				command = EPodOClockCmdSkipTrack;
-				txt = STR_podoclock_skip_track;
-				},
-		MENU_ITEM
-				{
-				command = EPodOClockCmdStopTrack;
-				txt = STR_podoclock_stop_track;
-				},
-		MENU_ITEM
-				{
-				command = EPodOClockCmdDeleteFile;
-				txt = STR_podoclock_delete_file;
-				},
 		// Alarm stuff:
 		MENU_ITEM
 				{
@@ -116,12 +80,25 @@ RESOURCE MENU_PANE r_podoclock_menu_pane
 				command = EPodOClockCmdRemoveAlarm;
 				txt = STR_podoclock_remove_alarm;
 				},
-		// Other stuff:
+
+		// Track stuff:
 /*		MENU_ITEM
+				{
+				command = EPodOClockCmdPlayTrack;
+				txt = STR_podoclock_play_track;
+				},
+*/		MENU_ITEM
+				{
+				command = EPodOClockCmdDeleteFile;
+				txt = STR_podoclock_delete_file;
+				},
+
+		// Other stuff:
+		MENU_ITEM
 				{
 				command = EPodOClockCmdHelp;
 				txt = STR_podoclock_help;
-				},*/
+				},
 		MENU_ITEM
 				{
 				command = EPodOClockCmdAbout;
@@ -254,8 +231,8 @@ RESOURCE DIALOG r_podoclock_time_query_dialog
 		};
 	}
 
-//RESOURCE TBUF r_podoclock_help			{buf = STR_podoclock_help;}
-//RESOURCE TBUF r_podoclock_help_text		{buf = STR_podoclock_help_text;}
+RESOURCE TBUF r_podoclock_help			{buf = STR_podoclock_help;}
+RESOURCE TBUF r_podoclock_help_text		{buf = STR_podoclock_help_text;}
 RESOURCE TBUF r_podoclock_about			{buf = STR_podoclock_about;}
 RESOURCE TBUF r_podoclock_about_text	{buf = STR_podoclock_about_text;}
 RESOURCE TBUF r_podoclock_hide			{buf = STR_podoclock_hide;}
@@ -265,29 +242,20 @@ RESOURCE TBUF r_podoclock_alarm_set				{buf = STR_podoclock_alarm_set;}
 RESOURCE TBUF r_podoclock_no_alarm_set			{buf = STR_podoclock_no_alarm_set;}
 RESOURCE TBUF r_podoclock_alarm					{buf = STR_podoclock_alarm;}
 RESOURCE TBUF r_podoclock_remove_alarm_query	{buf = STR_podoclock_remove_alarm_query;}
+RESOURCE TBUF r_podoclock_alarm_removed			{buf = STR_podoclock_alarm_removed;}
 
 RESOURCE TBUF r_podoclock_alarm_hour_minute		{ buf = STR_podoclock_alarm_hour_minute; }
 RESOURCE TBUF r_podoclock_alarm_hour_minutes	{ buf = STR_podoclock_alarm_hour_minutes; }
 RESOURCE TBUF r_podoclock_alarm_hours_minute	{ buf = STR_podoclock_alarm_hours_minute; }
 RESOURCE TBUF r_podoclock_alarm_hours_minutes	{ buf = STR_podoclock_alarm_hours_minutes; }
 
+RESOURCE TBUF r_podoclock_delete_file		{ buf = STR_podoclock_delete_file; }
 RESOURCE TBUF r_podoclock_delete_file_query	{ buf = STR_podoclock_delete_file_query; }
 RESOURCE TBUF r_podoclock_file_deleted		{ buf = STR_podoclock_file_deleted; }
 RESOURCE TBUF r_podoclock_file_not_deleted	{ buf = STR_podoclock_file_not_deleted; }
 
-RESOURCE TBUF r_podoclock_year_format	{ buf = STR_podoclock_year_format; }
-RESOURCE TBUF r_podoclock_x_of_y_format	{ buf = STR_podoclock_x_of_y_format; }
-RESOURCE TBUF r_podoclock_volume		{ buf = STR_podoclock_volume; }
-
-RESOURCE TBUF r_podoclock_keys1		{ buf = STR_podoclock_keys1; }
-RESOURCE TBUF r_podoclock_keys2		{ buf = STR_podoclock_keys2; }
-RESOURCE TBUF r_podoclock_keys3		{ buf = STR_podoclock_keys3; }
-RESOURCE TBUF r_podoclock_keys4		{ buf = STR_podoclock_keys4; }
-RESOURCE TBUF r_podoclock_keys5		{ buf = STR_podoclock_keys5; }
-RESOURCE TBUF r_podoclock_keys6		{ buf = STR_podoclock_keys6; }
-RESOURCE TBUF r_podoclock_keys7		{ buf = STR_podoclock_keys7; }
-RESOURCE TBUF r_podoclock_keys8		{ buf = STR_podoclock_keys8; }
-
+RESOURCE TBUF r_podoclock_no_podcasts_found		{ buf = STR_podoclock_no_podcasts_found; }
+RESOURCE TBUF r_podoclock_x_of_y_format			{ buf = STR_podoclock_x_of_y_format; }
 RESOURCE TBUF r_podoclock_same_time_tomorrow	{ buf = STR_podoclock_same_time_tomorrow; }
 
 // End of file

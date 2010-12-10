@@ -22,20 +22,17 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef __PODOCLOCK_HRH__
 #define __PODOCLOCK_HRH__
 
-enum TPodOClockIds // Commands for options menus
+enum TPodOClockIds // Commands for menu options and touches
 	{
 	EPodOClockCmdHide = 0x6001, // start value must not be 0
 	EPodOClockCmdSetAlarm,
 	EPodOClockCmdResetAlarm,
+	EPodOClockCmdAskRemoveAlarm,
 	EPodOClockCmdRemoveAlarm,
 	EPodOClockCmdPlayTrack,
-	EPodOClockCmdPauseTrack,
-	EPodOClockCmdBackTrack,
-	EPodOClockCmdSkipTrack,
-	EPodOClockCmdStopTrack,
-	EPodOClockCmdTrackInfo,
+	EPodOClockCmdAskDeleteFile,
 	EPodOClockCmdDeleteFile,
-//	EPodOClockCmdHelp,
+	EPodOClockCmdHelp,
 	EPodOClockCmdAbout
 	};
 

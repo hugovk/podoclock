@@ -30,6 +30,9 @@ ICONTARGETFILENAME=$(TARGETDIR)\podoclock_aif.mif
 
 ICONDIR=..\gfx
 
+HEADERDIR=$(EPOCROOT)epoc32\include
+HEADERFILENAME=$(HEADERDIR)\podoclock.mbg
+
 do_nothing :
 	@rem do_nothing
 
@@ -44,8 +47,10 @@ LIB : do_nothing
 CLEANLIB : do_nothing
 
 RESOURCE :
-	mifconv $(ICONTARGETFILENAME) \
-		/X /c32 $(ICONDIR)\qgn_menu_podoclock.svg
+	mifconv $(ICONTARGETFILENAME) /X /h$(HEADERFILENAME) \
+		/c32 $(ICONDIR)\qgn_menu_podoclock.svg \
+		/c32,8 $(ICONDIR)\play.svg \
+		/c32,8 $(ICONDIR)\delete.svg
 
 FREEZE : do_nothing
 
@@ -53,7 +58,8 @@ SAVESPACE : do_nothing
 
 RELEASABLES :
 	@echo $(ICONTARGETFILENAME)
-
+	@echo $(HEADERFILENAME)
+	
 FINAL : do_nothing
 
 # End of file
