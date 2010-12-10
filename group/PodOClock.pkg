@@ -23,7 +23,7 @@
 &EN
 
 ; Standard SIS file header
-#{"Pod O'Clock"}, (0xA89FB98E),1,20,0
+#{"Pod O'Clock"}, (0xA89FB98E),2,00,0
 
 ; Localised Vendor name
 %{"Pod O'Clock"}
@@ -41,14 +41,18 @@
 [0x20022E6D], 0, 0, 0, {"S60ProductID"}
 
 ; Files to install
-"..\..\epoc32\release\gcce\urel\PodOClock.exe" - "!:\sys\bin\PodOClock.exe"
+"..\..\..\epoc32\release\gcce\urel\PodOClock.exe" - "!:\sys\bin\PodOClock.exe"
 
 {
-"..\..\epoc32\data\z\resource\apps\PodOClock.r01"
+"..\..\..\epoc32\data\z\resource\apps\PodOClock.r01"
 } - "!:\resource\apps\PodOClock.rsc"
 
-"..\..\epoc32\data\z\private\10003a3f\import\apps\PodOClock_reg.r01" -"!:\private\10003a3f\import\apps\PodOClock_reg.r01"
-"..\..\epoc32\data\z\resource\apps\podoclock_aif.mif" - "!:\resource\apps\podoclock_aif.mif"
+"..\..\..\epoc32\data\z\private\10003a3f\import\apps\PodOClock_reg.r01" -"!:\private\10003a3f\import\apps\PodOClock_reg.r01"
+"..\..\..\epoc32\data\z\resource\apps\podoclock_aif.mif" - "!:\resource\apps\podoclock_aif.mif"
+
+; Symbian^X touch feedback
+"..\..\..\epoc32\release\gcce\urel\podoclocktouchfeedback.dll"-"!:\sys\bin\podoclocktouchfeedback.dll"
+"..\..\..\epoc32\data\z\resource\plugins\podoclocktouchfeedback.rsc"-"!:\resource\plugins\podoclocktouchfeedback.rsc"
 
 ; Required for application to be covered by backup/restore facility
 "backup_registration.xml" - "!:\private\A89FB98E\backup_registration.xml"

@@ -48,9 +48,9 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
     #define TRACER_RET(func,format)
     #define TRACER_AUTO
     #define TRACER_AUTO_RET
-    #define LOGTEXT(func)
-    #define LOGBUF(func)
-    #define LOGINT(func)
+    #define LOGTEXT(a)
+    #define LOGBUF(a)
+    #define LOGINT(a)
 
 #else                       // Logging on
 
