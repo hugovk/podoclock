@@ -32,6 +32,9 @@ enum TPodOClockIds // Commands for menu options and touches
 	EPodOClockCmdPlayTrack,
 	EPodOClockCmdAskDeleteFile,
 	EPodOClockCmdDeleteFile,
+	EPodOClockMoreApps,
+	EPodOClockMoreAppsDataQuota,
+	EPodOClockMoreAppsMobbler,
 	EPodOClockCmdHelp,
 	EPodOClockCmdAbout
 	};
