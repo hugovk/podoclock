@@ -26,6 +26,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include <aknappui.h>
 
 // FORWARD DECLARATIONS
+class CBrowserLauncher;
 class CPodOClockAppView;
 
 // CLASS DECLARATION
@@ -45,6 +46,7 @@ class CPodOClockAppUi : public CAknAppUi
 		void DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane);
 
 	private: // Data
+		CBrowserLauncher* iBrowserLauncher;
 		CPodOClockAppView* iAppView;
 
 	};

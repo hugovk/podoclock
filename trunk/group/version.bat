@@ -1,2 +1,2 @@
-call PodOClock.pkg
-call ..\inc\PodOClockAppView.h
+start PodOClock.pkg
+start ..\inc\PodOClockAppView.h

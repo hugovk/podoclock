@@ -1,4 +1,4 @@
-Pod O'Clock version 2.00 10.12.2010
+Pod O'Clock version 2.00 13.12.2010
 
 Now embeds the phone's own music player instead of implementing it all from scratch. Numerous benefits:
  * scrobbles with Mobbler
@@ -9,7 +9,8 @@ Now embeds the phone's own music player instead of implementing it all from scra
  * interruption from calls, phone alarms
  * fewer bugs
  * smaller binary
-Added touch feedback for Symbian^1 and Symbian^3, thanks to Mobbler for the open source code: http://code.google.com/p/mobbler/
+Added touch feedback for Symbian^1 and Symbian^3, thanks to Mobbler for the open source code: http://code.google.com/p/mobbler/ and Tango Desktop Project for the icons.
+Added a "More apps" menu option to promote Data Quota and Mobbler.
 
 Pod O'Clock version 1.20 15.11.2010
 

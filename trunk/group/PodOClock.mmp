@@ -63,6 +63,7 @@ LIBRARY			apgrfx.lib
 LIBRARY			apmime.lib    // TDataType
 LIBRARY			apparc.lib
 LIBRARY			avkon.lib
+LIBRARY			browserlauncher.lib
 LIBRARY			commonengine.lib
 LIBRARY			commonui.lib  // CDocumentHandler
 LIBRARY			cone.lib

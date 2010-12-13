@@ -21,6 +21,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 // INCLUDE FILES
 #include <AknMessageQueryDialog.h>
+#include <BrowserLauncher.h>
 #include <PodOClock.rsg>
 
 #include "PodOClock.hrh"
@@ -65,27 +66,15 @@ CPodOClockAppUi::~CPodOClockAppUi()
 		delete iAppView;
 		iAppView = NULL;
 		}
+	delete iBrowserLauncher;
 	}
 
 
 void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 	{
 	TRACER_AUTO;
-	switch(aCommand)
+	switch (aCommand)
 		{
-		case EEikCmdExit:
-		case EAknSoftkeyExit:
-			Exit();
-			break;
-
-		case EPodOClockCmdHide:
-			{
-			TApaTask task(iEikonEnv->WsSession());
-			task.SetWgId(CEikonEnv::Static()->RootWin().Identifier());
-			task.SendToBackground();
-			}
-			break;
-
 		case EPodOClockCmdSetAlarm:
 		case EPodOClockCmdResetAlarm:
 			{
@@ -129,6 +118,36 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			iAppView->AskDeleteFileL();
 			break;
 
+		case EPodOClockMoreAppsDataQuota:	// intentional fall-through
+		case EPodOClockMoreAppsMobbler:		// intentional fall-through
+			{
+			TBuf<256> url;
+			switch (aCommand)
+				{
+				case EPodOClockMoreAppsDataQuota:
+					{
+					_LIT(KUrl, "http://code.google.com/p/dataquota/");
+					url.Copy(KUrl);
+					}
+					break;
+				case EPodOClockMoreAppsMobbler:
+					{
+					_LIT(KUrl, "http://code.google.com/p/mobbler/");
+					url.Copy(KUrl);
+					}
+					break;
+				default:
+					break;
+				}
+			
+			if (!iBrowserLauncher)
+				{
+				iBrowserLauncher = CBrowserLauncher::NewL();
+				}
+			iBrowserLauncher->LaunchBrowserEmbeddedL(url);
+			}
+			break;
+
 		case EPodOClockCmdHelp:
 			{
 			// Create the header text
@@ -169,6 +188,19 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			dlg->RunLD();
 			
 			CleanupStack::PopAndDestroy(3, title1); // title1, version, title
+			}
+			break;
+
+		case EEikCmdExit:
+		case EAknSoftkeyExit:
+			Exit();
+			break;
+
+		case EPodOClockCmdHide:
+			{
+			TApaTask task(iEikonEnv->WsSession());
+			task.SetWgId(CEikonEnv::Static()->RootWin().Identifier());
+			task.SendToBackground();
 			}
 			break;
 

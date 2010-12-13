@@ -66,49 +66,69 @@ RESOURCE MENU_PANE r_podoclock_menu_pane
 		{
 		// Alarm stuff:
 		MENU_ITEM
-				{
-				command = EPodOClockCmdSetAlarm;
-				txt = STR_podoclock_set_alarm;
-				},
+			{
+			command = EPodOClockCmdSetAlarm;
+			txt = STR_podoclock_set_alarm;
+			},
 		MENU_ITEM
-				{
-				command = EPodOClockCmdResetAlarm;
-				txt = STR_podoclock_reset_alarm;
-				},
+			{
+			command = EPodOClockCmdResetAlarm;
+			txt = STR_podoclock_reset_alarm;
+			},
 		MENU_ITEM
-				{
-				command = EPodOClockCmdRemoveAlarm;
-				txt = STR_podoclock_remove_alarm;
-				},
+			{
+			command = EPodOClockCmdRemoveAlarm;
+			txt = STR_podoclock_remove_alarm;
+			},
 
 		// Track stuff:
-/*		MENU_ITEM
-				{
-				command = EPodOClockCmdPlayTrack;
-				txt = STR_podoclock_play_track;
-				},
-*/		MENU_ITEM
-				{
-				command = EPodOClockCmdDeleteFile;
-				txt = STR_podoclock_delete_file;
-				},
+		MENU_ITEM
+			{
+			command = EPodOClockCmdDeleteFile;
+			txt = STR_podoclock_delete_file;
+			},
 
 		// Other stuff:
 		MENU_ITEM
-				{
-				command = EPodOClockCmdHelp;
-				txt = STR_podoclock_help;
-				},
+			{
+			command = EPodOClockCmdHelp;
+			txt = STR_podoclock_help;
+			},
 		MENU_ITEM
-				{
-				command = EPodOClockCmdAbout;
-				txt = STR_podoclock_about;
-				},
+			{
+			command = EPodOClockCmdAbout;
+			txt = STR_podoclock_about;
+			},
 		MENU_ITEM
-				{
-				command = EAknSoftkeyExit;
-				txt = STR_podoclock_exit;
-				}
+			{
+			command = EPodOClockMoreApps;
+			txt = STR_podoclock_more_apps;
+			cascade = r_podoclock_more_apps_menu_pane;
+			},
+		MENU_ITEM
+			{
+			command = EAknSoftkeyExit;
+			txt = STR_podoclock_exit;
+			}
+		};
+	}
+
+
+// More apps submenu
+RESOURCE MENU_PANE r_podoclock_more_apps_menu_pane
+	{
+	items =
+		{
+		MENU_ITEM
+			{
+			command = EPodOClockMoreAppsDataQuota;
+			txt = STR_podoclock_dataquota;
+			},
+		MENU_ITEM
+			{
+			command = EPodOClockMoreAppsMobbler;
+			txt = STR_podoclock_mobbler;
+			}
 		};
 	}
 
