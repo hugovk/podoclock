@@ -120,6 +120,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 
 		case EPodOClockMoreAppsDataQuota:	// intentional fall-through
 		case EPodOClockMoreAppsMobbler:		// intentional fall-through
+		case EPodOClockMoreAppsSugarSync:	// intentional fall-through
 			{
 			TBuf<256> url;
 			switch (aCommand)
@@ -133,6 +134,12 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 				case EPodOClockMoreAppsMobbler:
 					{
 					_LIT(KUrl, "http://code.google.com/p/mobbler/");
+					url.Copy(KUrl);
+					}
+					break;
+				case EPodOClockMoreAppsSugarSync:
+					{
+					_LIT(KUrl, "https://www.sugarsync.com/referral?rf=eoovtb627jrd7");
 					url.Copy(KUrl);
 					}
 					break;

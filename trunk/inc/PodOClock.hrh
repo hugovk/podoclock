@@ -32,11 +32,12 @@ enum TPodOClockIds // Commands for menu options and touches
 	EPodOClockCmdPlayTrack,
 	EPodOClockCmdAskDeleteFile,
 	EPodOClockCmdDeleteFile,
+	EPodOClockCmdHelp,
+	EPodOClockCmdAbout,
 	EPodOClockMoreApps,
 	EPodOClockMoreAppsDataQuota,
 	EPodOClockMoreAppsMobbler,
-	EPodOClockCmdHelp,
-	EPodOClockCmdAbout
+	EPodOClockMoreAppsSugarSync
 	};
 
 enum TEPodOClockControls
