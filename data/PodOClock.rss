@@ -128,6 +128,11 @@ RESOURCE MENU_PANE r_podoclock_more_apps_menu_pane
 			{
 			command = EPodOClockMoreAppsMobbler;
 			txt = STR_podoclock_mobbler;
+			},
+		MENU_ITEM
+			{
+			command = EPodOClockMoreAppsSugarSync;
+			txt = STR_podoclock_sugarsync;
 			}
 		};
 	}
