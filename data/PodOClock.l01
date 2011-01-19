@@ -3,7 +3,7 @@ PodOClock.l01 - UK English
 
 Pod O'Clock for S60 phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -33,7 +33,7 @@ rls_string STR_podoclock_play_track "Play"
 rls_string STR_podoclock_pause_track "Pause"
 rls_string STR_podoclock_delete_file "Delete file"
 rls_string STR_podoclock_help "Help"
-rls_string STR_podoclock_help_text "Pod O'Clock plays a random podcast when an alarm goes off.\n\nPodcasts must MP3 files somewhere under E:\\podcasts\\\n\nTouchscreen:\nTouch the alarm text to set or reset an alarm.\nTouch the red X next to the alarm to remove the alarm.\nTouch the big green arrow to play a random podcast now.\nTouch the red X next to the filename to delete it.\n\nKeypad:\nPress OK or right arrow to play a random podcast now.\nPress C to remove alarm, or delete file."
+rls_string STR_podoclock_help_text "Pod O'Clock plays a random podcast when an alarm goes off.\n\nPodcasts must MP3 files somewhere under E:\\podcasts\\\n\nTouchscreen:\nTouch the alarm text to set or reset an alarm.\nTouch the red X next to the alarm to remove the alarm.\nTouch the big green arrow to play a random podcast now.\nTouch the the filename to play it again.\nTouch the red X next to the filename to delete it.\n\nKeypad:\nOK or right arrow: Play a random podcast now.\nC: Remove alarm, or delete file."
 rls_string STR_podoclock_about "About"
 rls_string STR_podoclock_more_apps "More apps"
 rls_string STR_podoclock_dataquota "Data Quota"
@@ -61,7 +61,6 @@ rls_string STR_podoclock_file_deleted "%S deleted"
 rls_string STR_podoclock_file_not_deleted "Not deleted (%d)"
 
 rls_string STR_podoclock_no_podcasts_found "No podcasts found"
-rls_string STR_podoclock_x_of_y_format "%d/%d"
 rls_string STR_podoclock_same_time_tomorrow "Same time tomorrow?"
 
 // End of file

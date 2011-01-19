@@ -1,7 +1,7 @@
 /*
 Pod O'Clock for S60 phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -258,7 +258,7 @@ RESOURCE DIALOG r_podoclock_time_query_dialog
 
 RESOURCE TBUF r_podoclock_help			{buf = STR_podoclock_help;}
 RESOURCE TBUF r_podoclock_help_text		{buf = STR_podoclock_help_text;}
-RESOURCE TBUF r_podoclock_about			{buf = STR_podoclock_about;}
+//RESOURCE TBUF r_podoclock_about			{buf = STR_podoclock_about;}
 RESOURCE TBUF r_podoclock_about_text	{buf = STR_podoclock_about_text;}
 RESOURCE TBUF r_podoclock_hide			{buf = STR_podoclock_hide;}
 
@@ -280,7 +280,6 @@ RESOURCE TBUF r_podoclock_file_deleted		{ buf = STR_podoclock_file_deleted; }
 RESOURCE TBUF r_podoclock_file_not_deleted	{ buf = STR_podoclock_file_not_deleted; }
 
 RESOURCE TBUF r_podoclock_no_podcasts_found		{ buf = STR_podoclock_no_podcasts_found; }
-RESOURCE TBUF r_podoclock_x_of_y_format			{ buf = STR_podoclock_x_of_y_format; }
 RESOURCE TBUF r_podoclock_same_time_tomorrow	{ buf = STR_podoclock_same_time_tomorrow; }
 
 // End of file

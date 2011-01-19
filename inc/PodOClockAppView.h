@@ -1,7 +1,7 @@
 /*
 Pod O'Clock for S60 phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -27,7 +27,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include "PodOClockTimer.h"
 
 // CONSTANTS
-_LIT(KVersion, "2.00");
+_LIT(KVersion, "2.02");
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;
@@ -108,7 +108,6 @@ class CPodOClockAppView : public CCoeControl,
 		HBufC* iAlarmSetText;
 		HBufC* iNoAlarmSetText;
 		HBufC* iDeleteFileText;
-		HBufC* iXOfYFormat;
 
 		TRect iAlarmTextRect;
 		TRect iDeleteAlarmButtonRect;

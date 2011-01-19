@@ -1,7 +1,7 @@
 /*
 Pod O'Clock for S60 phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -110,7 +110,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			iAppView->RemoveAlarm();
 			break;
 
-		case EPodOClockCmdPlayTrack:
+		case EPodOClockCmdPlayRandomTrack:
 			iAppView->PlayRandomFileL();
 			break;
 
@@ -189,7 +189,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			// Initialise the dialog
 			dlg->PrepareLC(R_PODOCLOCK_ABOUT_BOX);
 			dlg->QueryHeading()->SetTextL(*title);
-			_LIT(KMessage, "2010 Hugo van Kemenade\ncode.google.com/p/podoclock\ntwitter.com/PodOClock");
+			_LIT(KMessage, "2010-2011 Hugo van Kemenade\ncode.google.com/p/podoclock\ntwitter.com/PodOClock");
 			dlg->SetMessageTextL(KMessage);
 			
 			dlg->RunLD();
