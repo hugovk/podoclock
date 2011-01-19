@@ -1,7 +1,7 @@
 /*
 Pod O'Clock for S60 phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -52,6 +52,8 @@ _LIT(KSettingsFile, "c:settings.dat");
 const TInt KSettingsFileVersion(1);
 _LIT(KDefaultAlarmTime, "070000."); // "HHMMSS."
 _LIT(KWildcard, "*.mp3");
+_LIT(KSlash, "/");
+_LIT(KQuestionMarkSlash, "?/");
 
 #ifdef __WINS__
 	_LIT(KPodcastPath, "C:\\Podcasts\\");
@@ -127,7 +129,8 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 
 
 CPodOClockAppView::CPodOClockAppView()
-	: iAskRepeat(EFalse)
+	: iNumberOfFiles(KErrUnknown),
+	  iAskRepeat(EFalse)
 	{
 	TRACER_AUTO;
 	// No implementation required
@@ -146,7 +149,6 @@ CPodOClockAppView::~CPodOClockAppView()
 	delete iAlarmSetText;
 	delete iNoAlarmSetText;
 	delete iDeleteFileText;
-	delete iXOfYFormat;
 	
 	iNaviContainer->Pop(iNaviLabelDecorator);
 	delete iNaviLabelDecorator;
@@ -166,7 +168,6 @@ void CPodOClockAppView::LoadResourceFileTextL()
 	iAlarmSetText = StringLoader::LoadL(R_PODOCLOCK_ALARM_SET);
 	iNoAlarmSetText = StringLoader::LoadL(R_PODOCLOCK_NO_ALARM_SET);
 	iDeleteFileText = StringLoader::LoadL(R_PODOCLOCK_DELETE_FILE);
-	iXOfYFormat = StringLoader::LoadL(R_PODOCLOCK_X_OF_Y_FORMAT);
 	}
 
 
@@ -259,10 +260,12 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 		DrawText(*iNoAlarmSetText, iAlarmTextRect, rgbTheme);
 		}
 
+	TBuf<KMaxChars> countOfTotal;
 	if (FileNameKnown())
 		{
-		TBuf<KMaxChars> countOfTotal;
-		countOfTotal.Format(*iXOfYFormat, iCurrentFileNumber, iNumberOfFiles);
+		countOfTotal.AppendNum(iCurrentFileNumber);
+		countOfTotal.Append(KSlash);
+		countOfTotal.AppendNum(iNumberOfFiles);
 		DrawText(countOfTotal, iPlayButtonRect.iBr.iY, rgbTheme);
 		
 		DrawText(iChoppedFileName, iFileNameRect, rgbTheme);
@@ -273,8 +276,12 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 			gc.BitBltMasked(iDeleteFileButtonRect.iTl, iDeleteIcon, rect, iDeleteMask, EFalse);
 			}
 		}
-	else // no track played (yet)
+	// No current file, but a total is known
+	else if (iNumberOfFiles != KErrUnknown)
 		{
+		countOfTotal.Copy(KQuestionMarkSlash);
+		countOfTotal.AppendNum(iNumberOfFiles);
+		DrawText(countOfTotal, iPlayButtonRect.iBr.iY, rgbTheme);
 		}
 
 	gc.DiscardFont();
@@ -454,7 +461,13 @@ void CPodOClockAppView::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 		else if (iPlayButtonRect.Contains(aPointerEvent.iPosition) &&
 				 iPlayButtonRect.Contains(iLastTouchPosition))
 			{
-			command = EPodOClockCmdPlayTrack;
+			command = EPodOClockCmdPlayRandomTrack;
+			}
+		else if (FileNameKnown() &&
+				 iFileNameRect.Contains(aPointerEvent.iPosition) &&
+				 iFileNameRect.Contains(iLastTouchPosition))
+			{
+			command = EPodOClockCmdPlayLastTrack;
 			}
 		else if (FileNameKnown() &&
 				 iDeleteFileButtonRect.Contains(aPointerEvent.iPosition) &&
@@ -481,8 +494,11 @@ void CPodOClockAppView::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 			case EPodOClockCmdAskRemoveAlarm:
 				AskRemoveAlarmL();
 				break;
-			case EPodOClockCmdPlayTrack:
+			case EPodOClockCmdPlayRandomTrack:
 				PlayRandomFileL();
+				break;
+			case EPodOClockCmdPlayLastTrack:
+				LaunchFileEmbeddedL(iCurrentFileName);
 				break;
 			case EPodOClockCmdAskDeleteFile:
 				AskDeleteFileL();
@@ -655,6 +671,7 @@ void CPodOClockAppView::DeleteFileL()
 		confirmation = HBufC::NewLC(format->Length() + iCurrentFileName.Length());
 		confirmation->Des().Format(*format, &iCurrentFileName);
 		iCurrentFileName.Zero();
+		--iNumberOfFiles;
 		}
 	else
 		{
@@ -728,7 +745,6 @@ void CPodOClockAppView::PlayRandomFileL()
 		TInt chopLength(iCurrentFileName.Length() - KPodcastPath().Length());
 		iChoppedFileName = iCurrentFileName.Right(chopLength);
 		
-		LOGTEXT("PlayL");
 		LOGBUF(iCurrentFileName);
 		LaunchFileEmbeddedL(iCurrentFileName);
 		AskRepeatAlarmL();
