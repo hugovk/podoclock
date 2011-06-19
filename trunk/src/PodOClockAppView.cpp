@@ -26,6 +26,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include <AknNaviDe.h>
 #include <AknNaviLabel.h>
 #include <AknNoteWrappers.h>
+#include <apmrec.h>
 #include <DocumentHandler.h>
 #include <e32math.h>
 #include <s32file.h>
@@ -54,6 +55,7 @@ _LIT(KDefaultAlarmTime, "070000."); // "HHMMSS."
 _LIT(KWildcard, "*.mp3");
 _LIT(KSlash, "/");
 _LIT(KQuestionMarkSlash, "?/");
+_LIT(KAudioMpeg, "audio/mpeg");
 
 #ifdef __WINS__
 	_LIT(KPodcastPath, "C:\\Podcasts\\");
@@ -362,6 +364,7 @@ void CPodOClockAppView::SizeChanged()
 	{
 	TRACER_AUTO;
 	SetPositions();
+	//DoChangePaneTextL();
 	DrawDeferred();
 	}
 
@@ -691,20 +694,16 @@ void CPodOClockAppView::DeleteFileL()
 void CPodOClockAppView::PlayRandomFileL()
 	{
 	TRACER_AUTO;
-	// Connect to the file server
-	RFs fs;
-	fs.Connect();
-	CleanupClosePushL(fs);
-
 	// Get the file list
 	LOGTEXT("Get the file list");
 
 	iFileArray.Reset();
-	CDirScan* scan(CDirScan::NewLC(fs));
+	CDirScan* scan(CDirScan::NewLC(CCoeEnv::Static()->FsSession()));
 	scan->SetScanDataL(KPodcastPath, KEntryAttNormal, ESortNone);
 	TInt error(KErrNone);
 	CDir* dirList(NULL);
-	TFindFile finder(fs);
+	TFindFile finder(CCoeEnv::Static()->FsSession());
+	User::LeaveIfError(iApaLsSession.Connect());
 	FOREVER
 		{
 		TRAP(error, scan->NextL(dirList));
@@ -714,6 +713,7 @@ void CPodOClockAppView::PlayRandomFileL()
 			}
 		FindFiles(finder, scan->FullPath());
 		};
+	iApaLsSession.Close();
 	delete dirList;
 	CleanupStack::PopAndDestroy(scan);
 	
@@ -734,6 +734,9 @@ void CPodOClockAppView::PlayRandomFileL()
 		}
 	else
 		{
+
+////
+
 		TInt random(Math::Rand(iSeed) % iNumberOfFiles);
 		LOGTEXT("random");
 		LOGINT(random);
@@ -746,11 +749,18 @@ void CPodOClockAppView::PlayRandomFileL()
 		iChoppedFileName = iCurrentFileName.Right(chopLength);
 		
 		LOGBUF(iCurrentFileName);
+
+//		LOGINT(IsAudioFile(iCurrentFileName));
+//		LOGINT(IsAudioFile(_L("E:\\podcasts\\A history of the world in 100 objects\\ahow_20100615-1000a-40960000.mp3")));
+//		LOGINT(IsAudioFile(_L("E:\\podcasts\\A history of the world in 100 objects\\ahow_20100622-1000a-4175901727.mp3")));
+
 		LaunchFileEmbeddedL(iCurrentFileName);
+
+////
+
 		AskRepeatAlarmL();
 		}
 	
-	CleanupStack::PopAndDestroy(); // fs
 	DrawDeferred();
 	}
 
@@ -772,12 +782,50 @@ void CPodOClockAppView::FindFiles(TFindFile& aFinder, const TDesC& aDir)
 				foundFile = aDir;
 				foundFile.Append((*foundFiles)[i].iName);
 //				LOGBUF(foundFile);
-				iFileArray.Append(foundFile);
+				if (IsAudioFile(foundFile, (*foundFiles)[i].iSize))
+					{
+					iFileArray.Append(foundFile);
+					}
 				}
 			}
 		}
 	}
 
+
+TBool CPodOClockAppView::IsAudioFile(const TDesC& aFileName, const TInt aFileSize)
+	{
+	TRACER_AUTO;
+	LOGBUF(aFileName);
+
+	iFileSize = aFileSize;
+	LOGTEXT("fileSize");
+	LOGINT(iFileSize);
+	if (iFileSize > 255)
+		{
+		iFileSize = 255;
+		}
+
+	if (CCoeEnv::Static()->FsSession().ReadFileSection(aFileName,
+		0, iFileBuffer, iFileSize) == KErrNone)
+		{
+		// LOGTEXT("ReadFileSection() OK");
+
+		iApaLsSession.RecognizeData(aFileName, iFileBuffer, *&iMimeType);
+		// LOGTEXT("iMimeType.iDataType");
+		// LOGBUF(iMimeType.iDataType.Des());
+		// LOGTEXT("iMimeType.iConfidence");
+		// LOGINT(iMimeType.iConfidence);
+
+		if (iMimeType.iConfidence >= CApaDataRecognizerType::EProbable)
+			{
+			if (iMimeType.iDataType.Des().Compare(KAudioMpeg) == KErrNone)
+				{
+				return ETrue;
+				}
+			}
+		}
+	return EFalse;
+	}
 
 void CPodOClockAppView::LaunchFileEmbeddedL(const TDesC& aFileName)
 	{
