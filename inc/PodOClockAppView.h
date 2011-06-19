@@ -23,11 +23,12 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #define __PODOCLOCKAPPVIEW_H__
 
 #include <aknserverapp.h>  // MAknServerAppExitObserver
+#include <apgcli.h>
 
 #include "PodOClockTimer.h"
 
 // CONSTANTS
-_LIT(KVersion, "2.02");
+_LIT(KVersion, "2.03");
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;
@@ -99,8 +100,8 @@ class CPodOClockAppView : public CCoeControl,
 		void LoadSettingsL();
 		void SaveSettingsL();
 
-
 		void FindFiles(TFindFile& aFinder, const TDesC& aDir);
+		TBool IsAudioFile(const TDesC& aFileName, const TInt aFileSize);
 		void LaunchFileEmbeddedL(const TDesC& aFileName);
 		
 	private:
@@ -136,6 +137,10 @@ class CPodOClockAppView : public CCoeControl,
 
 		// For finding files
 		RArray<TFileName> iFileArray;
+		RApaLsSession iApaLsSession;
+		TBuf8<255> iFileBuffer;
+		TInt iFileSize;
+		TDataRecognitionResult iMimeType;
 		TInt64 iSeed;
 		
 		// For keeping track of the playing track

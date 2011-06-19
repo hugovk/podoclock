@@ -23,7 +23,7 @@
 &EN
 
 ; Standard SIS file header
-#{"Pod O'Clock"}, (0xA89FB98E),2,02,0
+#{"Pod O'Clock"}, (0xA89FB98E),2,03,0
 
 ; Localised Vendor name
 %{"Pod O'Clock"}

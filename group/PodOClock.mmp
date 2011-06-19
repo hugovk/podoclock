@@ -22,8 +22,6 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 TARGET			PodOClock.exe
 TARGETTYPE		exe
 UID				0x100039CE 0xA89FB98E
-
-SECUREID		0xA89FB98E
 EPOCSTACKSIZE	0x5000
 
 #ifdef WINS
