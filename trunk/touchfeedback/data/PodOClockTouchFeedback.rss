@@ -1,7 +1,7 @@
 /*
-Pod O'Clock for S60 phones.
+Pod O'Clock for Symbian phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -46,18 +46,30 @@ permission notice:
 
 RESOURCE REGISTRY_INFO theInfo
 	{
+#ifdef __OVI_SIGNED__
+	dll_uid = 0x200427FB;
+#else
 	dll_uid = 0xA89FD1D7;
+#endif
 	
 	interfaces = 
 		{
 		INTERFACE_INFO
 			{
+#ifdef __OVI_SIGNED__
+			interface_uid = 0x200427FC;
+#else
 			interface_uid = 0xA89FD1D8;
+#endif
 			implementations = 
 				{
 				IMPLEMENTATION_INFO
 					{
+#ifdef __OVI_SIGNED__
+					implementation_uid = 0x200427FD;
+#else
 					implementation_uid = 0xA89FD1D9;
+#endif
 					version_no = 1;
 					display_name = "Pod O'Clock Touch Feedback";
 					default_data = "";

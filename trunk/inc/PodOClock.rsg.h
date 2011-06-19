@@ -1,7 +1,7 @@
 /*
 Pod O'Clock for Symbian phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010, 2011  Hugo van Kemenade
+Copyright (C) 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -19,32 +19,15 @@ You should have received a copy of the GNU General Public License
 along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// INCLUDE FILES
-#include "PodOClockApplication.h"
-#include "PodOClockDocument.h"
-//#include "PodOClockTracer.h"
+#ifndef __PODOCLOCK_RSG_H__
+#define __PODOCLOCK_RSG_H__
 
-// UID for the application should match the UID defined in the mmp file
 #ifdef __OVI_SIGNED__
-const TUid KUidPodOClockApp = {0x200427FA};
+#include <podoclock_0x200427FA.rsg>
 #else
-const TUid KUidPodOClockApp = {0xA89FB98E};
+#include <podoclock.rsg>
 #endif
 
-CApaDocument* CPodOClockApplication::CreateDocumentL()
-	{
-//	TRACER_AUTO;
-	// Create a PodOClock document, and return a pointer to it
-	return (static_cast<CApaDocument*>
-					(CPodOClockDocument::NewL(*this)));
-	}
-
-
-TUid CPodOClockApplication::AppDllUid() const
-	{
-//	TRACER_AUTO;
-	// Return the UID for the PodOClock application
-	return KUidPodOClockApp;
-	}
+#endif // __PODOCLOCK_RSG_H__
 
 // End of file
