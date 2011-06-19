@@ -1,7 +1,7 @@
 /*
-Pod O'Clock for S60 phones.
+Pod O'Clock for Symbian phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -43,9 +43,21 @@ permission notice:
 	along with Mobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "podoclock.mmh"
+
+#ifdef OVI_SIGNED
+
+TARGET		podoclocktouchfeedback_0x200427FB.dll
+TARGETTYPE	PLUGIN
+UID		0x10009D8D 0x200427FB
+
+#else
+
 TARGET		podoclocktouchfeedback.dll
 TARGETTYPE	PLUGIN
 UID		0x10009D8D 0xA89FD1D7
+
+#endif
 
 SOURCEPATH	..\src
 USERINCLUDE	..\inc
@@ -54,12 +66,18 @@ SYSTEMINCLUDE	\epoc32\include
 SOURCE		podoclocktouchfeedback.cpp
 
 START RESOURCE	..\data\podoclocktouchfeedback.rss
+#ifdef OVI_SIGNED
+TARGET podoclocktouchfeedback_0x200427FB
+#else
 TARGET podoclocktouchfeedback
+#endif
 END //RESOURCE
 
 LIBRARY		apgrfx.lib
 LIBRARY		apparc.lib
 LIBRARY		euser.lib
 LIBRARY		touchfeedback.lib
+
+CAPABILITY	NONE
 
 // End of file

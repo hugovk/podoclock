@@ -1,5 +1,5 @@
 /*
-Pod O'Clock for S60 phones.
+Pod O'Clock for Symbian phones.
 http://code.google.com/p/podoclock/
 Copyright (C) 2010, 2011  Hugo van Kemenade
 
@@ -22,9 +22,9 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 // INCLUDE FILES
 #include <AknMessageQueryDialog.h>
 #include <BrowserLauncher.h>
-#include <PodOClock.rsg>
 
 #include "PodOClock.hrh"
+#include "PodOClock.rsg.h"
 #include "PodOClockAppUi.h"
 #include "PodOClockAppView.h"
 #include "PodOClockTracer.h"

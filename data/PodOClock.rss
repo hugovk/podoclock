@@ -1,5 +1,5 @@
 /*
-Pod O'Clock for S60 phones.
+Pod O'Clock for Symbian phones.
 http://code.google.com/p/podoclock/
 Copyright (C) 2010, 2011  Hugo van Kemenade
 
@@ -150,7 +150,11 @@ RESOURCE LOCALISABLE_APP_INFO r_podoclock_localisable_app_info
 		caption = STR_podoclock_caption_string;
 
 		number_of_icons = 1;
+#ifdef __OVI_SIGNED__
+		icon_file = "\\resource\\apps\\PodOClock_aif_0x200427FA.mif";
+#else
 		icon_file = "\\resource\\apps\\PodOClock_aif.mif";
+#endif
 		};
 	}
 

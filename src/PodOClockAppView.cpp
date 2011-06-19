@@ -1,5 +1,5 @@
 /*
-Pod O'Clock for S60 phones.
+Pod O'Clock for Symbian phones.
 http://code.google.com/p/podoclock/
 Copyright (C) 2010, 2011  Hugo van Kemenade
 
@@ -38,8 +38,8 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include <PodOClock.mbg>
-#include <PodOClock.rsg>
 #include "PodOClock.hrh"
+#include "PodOClock.rsg.h"
 #include "PodOClockAppView.h"
 #include "PodOClockTracer.h"
 
@@ -47,7 +47,11 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 const TInt KMargin(10);
 const TRgb KRgbNow(KRgbYellow);
 const TInt KMaxChars(256);
+#ifdef __OVI_SIGNED__
+const TUid KTouchFeedbackImplUid = {0x200427FD};
+#else
 const TUid KTouchFeedbackImplUid = {0xA89FD1D9};
+#endif 
 
 _LIT(KSettingsFile, "c:settings.dat");
 const TInt KSettingsFileVersion(1);
