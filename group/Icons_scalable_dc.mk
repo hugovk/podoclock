@@ -48,7 +48,7 @@ CLEANLIB : do_nothing
 
 RESOURCE :
 	mifconv $(ICONTARGETFILENAME) /X /h$(HEADERFILENAME) \
-		/c32 $(ICONDIR)\qgn_menu_podoclock.svg \
+		/c32 $(ICONDIR)\podoclock.svg \
 		/c32,8 $(ICONDIR)\play.svg \
 		/c32,8 $(ICONDIR)\delete.svg
 

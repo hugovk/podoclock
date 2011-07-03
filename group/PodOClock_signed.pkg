@@ -19,12 +19,11 @@
 ; along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 ; 
 
-
 ; Language - standard language definitions
 &EN
 
 ; Standard SIS file header
-#{"Pod O'Clock"}, (0x200427FA),2,04,0
+#{"Pod O'Clock"}, (0x200427FA),2,05,0
 
 ; Localised Vendor name
 %{"Pod O'Clock"}
@@ -54,6 +53,8 @@
 ; Symbian^X touch feedback
 "..\..\..\epoc32\release\gcce\urel\podoclocktouchfeedback_0x200427FB.dll"-"!:\sys\bin\podoclocktouchfeedback_0x200427FB.dll"
 "..\..\..\epoc32\data\z\resource\plugins\podoclocktouchfeedback_0x200427FB.rsc"-"!:\resource\plugins\podoclocktouchfeedback_0x200427FB.rsc"
+
+"changelog.txt"-"", FILETEXT, TEXTCONTINUE
 
 ; Required for application to be covered by backup/restore facility
 "backup_registration.xml" - "!:\private\200427FA\backup_registration.xml"

@@ -21,6 +21,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 // INCLUDE FILES
 #include <AknMessageQueryDialog.h>
+#include <apgcli.h>
 #include <BrowserLauncher.h>
 
 #include "PodOClock.hrh"
@@ -147,11 +148,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 					break;
 				}
 			
-			if (!iBrowserLauncher)
-				{
-				iBrowserLauncher = CBrowserLauncher::NewL();
-				}
-			iBrowserLauncher->LaunchBrowserEmbeddedL(url);
+			OpenWebBrowserL(url);
 			}
 			break;
 
@@ -189,7 +186,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			// Initialise the dialog
 			dlg->PrepareLC(R_PODOCLOCK_ABOUT_BOX);
 			dlg->QueryHeading()->SetTextL(*title);
-			_LIT(KMessage, "2010-2011 Hugo van Kemenade\ncode.google.com/p/podoclock\ntwitter.com/PodOClock");
+			_LIT(KMessage, "(C) 2010-2011 Hugo van Kemenade\ncode.google.com/p/podoclock\ntwitter.com/PodOClock");
 			dlg->SetMessageTextL(KMessage);
 			
 			dlg->RunLD();
@@ -215,6 +212,54 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			break;
 		}
 	iAppView->DrawDeferred();
+	}
+
+
+void CPodOClockAppUi::OpenWebBrowserL(const TDesC& aUrl)
+	{
+#ifdef __OVI_SIGNED__
+	// Find the default browser, on S^1/S^3 it may be a 3rd party browser
+	RApaLsSession lsSession;
+	User::LeaveIfError(lsSession.Connect());
+	CleanupClosePushL(lsSession); 
+	_LIT8(KMimeDataType, "application/x-web-browse");
+	TDataType mimeDataType(KMimeDataType);
+	TUid handlerUid;
+	// Get the default application UID for "application/x-web-browse"
+	lsSession.AppForDataType(mimeDataType, handlerUid);
+	
+	if (handlerUid.iUid == 0)
+		{
+		// For S60 3.x
+		const TUid KBrowserUid = {0x10008D39};
+		handlerUid = KBrowserUid;
+		}
+	
+	TApaTaskList taskList(CEikonEnv::Static()->WsSession());
+	TApaTask task(taskList.FindApp(handlerUid));
+	if(task.Exists())
+		{
+		task.BringToForeground();
+		HBufC8* param8(HBufC8::NewLC(aUrl.Length()));
+		param8->Des().Append(aUrl);
+		task.SendMessage(TUid::Uid(0), *param8); // UID not used
+		CleanupStack::PopAndDestroy(param8);
+		}
+	else
+		{
+		TThreadId thread;
+		User::LeaveIfError(lsSession.StartDocument(aUrl, handlerUid, thread));
+		}
+	CleanupStack::PopAndDestroy(&lsSession);
+#else // !__OVI_SIGNED__
+#ifndef __WINS__
+	if (!iBrowserLauncher)
+		{
+		iBrowserLauncher = CBrowserLauncher::NewL();
+		}
+	iBrowserLauncher->LaunchBrowserEmbeddedL(aUrl);
+#endif
+#endif // __OVI_SIGNED__
 	}
 
 

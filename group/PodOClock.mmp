@@ -110,6 +110,11 @@ LIBRARY			ws32.lib
 DEBUGLIBRARY	flogger.lib
 
 VENDORID	0
+
+#ifdef OVI_SIGNED
+CAPABILITY	SwEvent // for TApaTask::SendMessage()
+#else
 CAPABILITY	NONE
+#endif
 
 // End of file

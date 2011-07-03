@@ -1,5 +1,20 @@
-Pod O'Clock version 2.00 13.12.2010
+Pod O'Clock change log
+======================
+2.05 (3rd July 2011)
+* Ran the icons through Nokia's SVG Converter.
+* Use the default web browser (for example Opera Mobile or Nokia browser). Only supported when Ovi-signed with SwEvent. This is self-signed.
 
+2.04 (19th June 2011)
+Add macro in .mmh to build with either self-signed UIDs or with Ovi-signed UIDs.
+
+2.03 (19th June 2011)
+When scanning .mp3 files, only add those with audio/mpeg MIME type to the shortlist. This avoids those mis-downloaded .mp3 files that contain text or html (usually with a 404/file not found error). 
+
+2.02 (19th January 2011)
+* You can press the last played filename to play it again (Sam)
+* Display ?/[total] after deleting a file
+
+2.00 (13th December 2010)
 Now embeds the phone's own music player instead of implementing it all from scratch. Numerous benefits:
  * scrobbles with Mobbler
  * much better music player UI 
@@ -12,8 +27,7 @@ Now embeds the phone's own music player instead of implementing it all from scra
 Added touch feedback for Symbian^1 and Symbian^3, thanks to Mobbler for the open source code: http://code.google.com/p/mobbler/ and Tango Desktop Project for the icons.
 Added a "More apps" menu option to promote Data Quota and Mobbler.
 
-Pod O'Clock version 1.20 15.11.2010
-
+1.20 (15th November 2010)
 Added simple touchscreen support:
     Added stuff controlled by keys to menu options
     Added remote support: side volume keys, back, play/pause, skip
@@ -24,8 +38,7 @@ Show hh:mm:ss or mm:ss.
 Nokia N8/Symbian^3 max volume support.
 Default volume to half max volume.
 
-Pod O'Clock version 1.10 09.10.2010
-
+1.10 (9th October 2010)
 Added more keys:
     OK: Play or pause
     Left: Jump back 5 seconds
@@ -42,8 +55,7 @@ Changed the file finding to find all *.mp3s under E:\podcasts\ instead of just t
 Load more strings from the loc file
 Fixed a crash when skipping tracks forward quickly
 
-Pod O'Clock version 1.00 20.09.2010
-
+1.00 (20th September 2010)
 Plays a random podcast when an alarm goes off.
 
 Podcasts must MP3 files somewhere under E:\podcasts\ 

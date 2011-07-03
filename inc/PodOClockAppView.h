@@ -28,7 +28,7 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include "PodOClockTimer.h"
 
 // CONSTANTS
-_LIT(KVersion, "2.04");
+_LIT(KVersion, "2.05");
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;

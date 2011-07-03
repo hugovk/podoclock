@@ -45,6 +45,9 @@ class CPodOClockAppUi : public CAknAppUi
 	private: // from CAknView
 		void DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane);
 
+	private: // new methods
+		void OpenWebBrowserL(const TDesC& aUrl);
+
 	private: // Data
 		CBrowserLauncher* iBrowserLauncher;
 		CPodOClockAppView* iAppView;

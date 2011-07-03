@@ -23,7 +23,7 @@
 &EN
 
 ; Standard SIS file header
-#{"Pod O'Clock"}, (0xA89FB98E),2,04,0
+#{"Pod O'Clock"}, (0xA89FB98E),2,05,0
 
 ; Localised Vendor name
 %{"Pod O'Clock"}
@@ -53,6 +53,8 @@
 ; Symbian^X touch feedback
 "..\..\..\epoc32\release\gcce\urel\podoclocktouchfeedback.dll"-"!:\sys\bin\podoclocktouchfeedback.dll"
 "..\..\..\epoc32\data\z\resource\plugins\podoclocktouchfeedback.rsc"-"!:\resource\plugins\podoclocktouchfeedback.rsc"
+
+"changelog.txt"-"", FILETEXT, TEXTCONTINUE
 
 ; Required for application to be covered by backup/restore facility
 "backup_registration.xml" - "!:\private\A89FB98E\backup_registration.xml"
