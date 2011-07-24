@@ -151,9 +151,9 @@ RESOURCE LOCALISABLE_APP_INFO r_podoclock_localisable_app_info
 
 		number_of_icons = 1;
 #ifdef __OVI_SIGNED__
-		icon_file = "\\resource\\apps\\PodOClock_aif_0x200427FA.mif";
+		icon_file = "\\resource\\apps\\PodOClock_0x200427FA.mif";
 #else
-		icon_file = "\\resource\\apps\\PodOClock_aif.mif";
+		icon_file = "\\resource\\apps\\PodOClock.mif";
 #endif
 		};
 	}

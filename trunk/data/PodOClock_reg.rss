@@ -23,14 +23,15 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include <appinfo.rh>
 #include "PodOClock.loc"
 #include "PodOClock.rsg.h"
+#include "PodOClockUids.h"
 
 CHARACTER_SET UTF8
 
 UID2 KUidAppRegistrationResourceFile
 #ifdef __OVI_SIGNED__
-UID3 0x200427FA
+UID3 KUidOviSigned
 #else
-UID3 0xA89FB98E
+UID3 KUidSelfSigned
 #endif
 
 RESOURCE APP_REGISTRATION_INFO

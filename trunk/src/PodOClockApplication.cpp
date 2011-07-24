@@ -23,12 +23,13 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include "PodOClockApplication.h"
 #include "PodOClockDocument.h"
 //#include "PodOClockTracer.h"
+#include "PodOClockUids.h"
 
 // UID for the application should match the UID defined in the mmp file
 #ifdef __OVI_SIGNED__
-const TUid KUidPodOClockApp = {0x200427FA};
+const TUid KUidPodOClockApp = {KUidOviSigned};
 #else
-const TUid KUidPodOClockApp = {0xA89FB98E};
+const TUid KUidPodOClockApp = {KUidSelfSigned};
 #endif
 
 CApaDocument* CPodOClockApplication::CreateDocumentL()

@@ -23,12 +23,17 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include <AknMessageQueryDialog.h>
 #include <apgcli.h>
 #include <BrowserLauncher.h>
+#ifdef __OVI_SIGNED__
+#include <SWInstApi.h>
+#include <SWInstDefs.h>
+#endif
 
 #include "PodOClock.hrh"
 #include "PodOClock.rsg.h"
 #include "PodOClockAppUi.h"
 #include "PodOClockAppView.h"
 #include "PodOClockTracer.h"
+#include "PodOClockUids.h"
 
 void CPodOClockAppUi::ConstructL()
 	{
@@ -48,10 +53,17 @@ void CPodOClockAppUi::ConstructL()
 	Cba()->RemoveCommandFromStack(pos, EAknSoftkeyExit);
 	Cba()->SetCommandL(pos, EPodOClockCmdHide, *hideText);
 	CleanupStack::PopAndDestroy(hideText);
+
+#ifndef __OVI_SIGNED__
+	LaunchOviSignedVersionL();
+#endif
 	}
 
 
 CPodOClockAppUi::CPodOClockAppUi()
+#ifdef __OVI_SIGNED__
+	: iUninstallAttempted(EFalse)
+#endif
 	{
 	TRACER_AUTO;
 	// No implementation required
@@ -197,6 +209,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 
 		case EEikCmdExit:
 		case EAknSoftkeyExit:
+			HandleCommandL(EPodOClockCmdHide);
 			Exit();
 			break;
 
@@ -205,6 +218,9 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			TApaTask task(iEikonEnv->WsSession());
 			task.SetWgId(CEikonEnv::Static()->RootWin().Identifier());
 			task.SendToBackground();
+#ifdef __OVI_SIGNED__
+			UninstallSelfSignedVersionL();
+#endif
 			}
 			break;
 
@@ -217,6 +233,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 
 void CPodOClockAppUi::OpenWebBrowserL(const TDesC& aUrl)
 	{
+	(void)aUrl;
 #ifdef __OVI_SIGNED__
 	// Find the default browser, on S^1/S^3 it may be a 3rd party browser
 	RApaLsSession lsSession;
@@ -261,6 +278,67 @@ void CPodOClockAppUi::OpenWebBrowserL(const TDesC& aUrl)
 #endif
 #endif // __OVI_SIGNED__
 	}
+
+
+#ifdef __OVI_SIGNED__
+void CPodOClockAppUi::UninstallSelfSignedVersionL()
+	{
+	TRACER_AUTO;
+	if (iUninstallAttempted)
+		{
+		return;
+		}
+	else
+		{
+		iUninstallAttempted = ETrue;
+		}
+	
+	SwiUI::RSWInstLauncher iLauncher; 
+	TInt error(iLauncher.Connect());
+	LOGINT(error);
+	 if (KErrNone == error)
+		{
+		SwiUI::TInstallOptions options;
+		SwiUI::TInstallOptionsPckg optionsPckg;  
+		options.iKillApp = SwiUI::EPolicyAllowed;
+		optionsPckg = options;  
+		error = iLauncher.SilentUninstall(
+			TUid::Uid(KUidSelfSigned), 
+			optionsPckg,
+			SwiUI::KSisxMimeType);
+		LOGINT(error);
+		}
+	iLauncher.Close();
+	}
+#endif // __OVI_SIGNED__
+
+
+#ifndef __OVI_SIGNED__
+void CPodOClockAppUi::LaunchOviSignedVersionL()
+	{
+	TRACER_AUTO;
+	RApaLsSession lsSession;
+	User::LeaveIfError(lsSession.Connect());
+	CleanupClosePushL(lsSession);
+
+	TApaAppInfo appInfo;
+	TInt error(lsSession.GetAppInfo(
+		appInfo, 
+		TUid::Uid(KUidOviSigned)));
+
+	if (KErrNone == error)
+		{
+		CApaCommandLine* cmdLine(CApaCommandLine::NewLC());
+		cmdLine->SetExecutableNameL(appInfo.iFullName);
+		cmdLine->SetCommandL(EApaCommandRun);
+		User::LeaveIfError(lsSession.StartApp(*cmdLine));
+		CleanupStack::PopAndDestroy(cmdLine);
+		}
+	CleanupStack::PopAndDestroy(&lsSession);
+	
+	// TODO exit?
+	}
+#endif // !__OVI_SIGNED__
 
 
 void CPodOClockAppUi::HandleResourceChangeL(TInt aType)
