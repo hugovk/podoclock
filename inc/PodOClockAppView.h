@@ -28,7 +28,11 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include "PodOClockTimer.h"
 
 // CONSTANTS
-_LIT(KVersion, "2.05");
+#ifdef __OVI_SIGNED__
+_LIT(KVersion, "3.06");
+#else
+_LIT(KVersion, "2.06");
+#endif
 
 // FORWARD DECLARATIONS
 class CAknNavigationControlContainer;
@@ -43,7 +47,7 @@ class CPodOClockAppView : public CCoeControl,
 						public MPodOClockTimerNotify
 	{
 
-	public: // New methods
+	public: // Constructors and destructors
 		static CPodOClockAppView* NewL(const TRect& aRect);
 		static CPodOClockAppView* NewLC(const TRect& aRect);
 		virtual ~CPodOClockAppView();
@@ -81,6 +85,7 @@ class CPodOClockAppView : public CCoeControl,
 		void ConstructL(const TRect& aRect);
 		CPodOClockAppView();
 
+	private: // New methods
 		// Drawing methods
 		void DrawText(const TDesC& aText, 
 					  const TInt& aY, 
@@ -100,8 +105,10 @@ class CPodOClockAppView : public CCoeControl,
 		void LoadSettingsL();
 		void SaveSettingsL();
 
-		void FindFiles(TFindFile& aFinder, const TDesC& aDir);
+		void FindFilesOnDriveL(const TInt& aDriveNumber);
+		void FindFilesInDir(TFindFile& aFinder, const TDesC& aDir);
 		TBool IsAudioFile(const TDesC& aFileName, const TInt aFileSize);
+		TBool IsAudioFileL(const TDesC& aFileName);
 		void LaunchFileEmbeddedL(const TDesC& aFileName);
 		
 	private:
@@ -138,9 +145,6 @@ class CPodOClockAppView : public CCoeControl,
 		// For finding files
 		RArray<TFileName> iFileArray;
 		RApaLsSession iApaLsSession;
-		TBuf8<255> iFileBuffer;
-		TInt iFileSize;
-		TDataRecognitionResult iMimeType;
 		TInt64 iSeed;
 		
 		// For keeping track of the playing track

@@ -107,12 +107,18 @@ LIBRARY			euser.lib
 LIBRARY			gdi.lib
 LIBRARY			ws32.lib
 
+#ifdef OVI_SIGNED
+LIBRARY			swinstcli.lib // RSWInstLauncher
+#endif
+
 DEBUGLIBRARY	flogger.lib
 
 VENDORID	0
 
 #ifdef OVI_SIGNED
-CAPABILITY	SwEvent // for TApaTask::SendMessage()
+CAPABILITY SwEvent TrustedUI
+// SwEvent for TApaTask::SendMessage()
+// TrustedUI for RSWInstLauncher.SilentUninstall()
 #else
 CAPABILITY	NONE
 #endif

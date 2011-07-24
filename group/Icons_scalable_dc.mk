@@ -1,7 +1,7 @@
 # 
 # Pod O'Clock for S60 phones.
 # http://code.google.com/p/podoclock/
-# Copyright (C) 2010  Hugo van Kemenade
+# Copyright (C) 2010, 2011  Hugo van Kemenade
 # 
 # This file is part of Pod O'Clock.
 # 
@@ -26,12 +26,16 @@ ZDIR=$(EPOCROOT)epoc32\data\z
 endif
 
 TARGETDIR=$(ZDIR)\resource\apps
-ICONTARGETFILENAME=$(TARGETDIR)\podoclock_aif.mif
+
+ICONTARGETFILENAME=$(TARGETDIR)\podoclock.mif
+OSICONTARGETFILENAME=$(TARGETDIR)\podoclock_0x200427FA.mif
 
 ICONDIR=..\gfx
 
 HEADERDIR=$(EPOCROOT)epoc32\include
+
 HEADERFILENAME=$(HEADERDIR)\podoclock.mbg
+OSHEADERFILENAME=$(HEADERDIR)\podoclock_0x200427FA.mbg
 
 do_nothing :
 	@rem do_nothing
@@ -52,6 +56,11 @@ RESOURCE :
 		/c32,8 $(ICONDIR)\play.svg \
 		/c32,8 $(ICONDIR)\delete.svg
 
+	mifconv $(OSICONTARGETFILENAME) /X /h$(OSHEADERFILENAME) \
+		/c32 $(ICONDIR)\podoclock_signed.svg \
+		/c32,8 $(ICONDIR)\play.svg \
+		/c32,8 $(ICONDIR)\delete.svg
+
 FREEZE : do_nothing
 
 SAVESPACE : do_nothing
@@ -59,6 +68,8 @@ SAVESPACE : do_nothing
 RELEASABLES :
 	@echo $(ICONTARGETFILENAME)
 	@echo $(HEADERFILENAME)
+	@echo $(OSICONTARGETFILENAME)
+	@echo $(OSHEADERFILENAME)
 	
 FINAL : do_nothing
 

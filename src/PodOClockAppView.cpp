@@ -37,7 +37,11 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 #include <touchfeedback.h>
 #endif
 
+#ifdef __OVI_SIGNED__
+#include <podoclock_0x200427FA.mbg>
+#else
 #include <PodOClock.mbg>
+#endif 
 #include "PodOClock.hrh"
 #include "PodOClock.rsg.h"
 #include "PodOClockAppView.h"
@@ -60,13 +64,15 @@ _LIT(KWildcard, "*.mp3");
 _LIT(KSlash, "/");
 _LIT(KQuestionMarkSlash, "?/");
 _LIT(KAudioMpeg, "audio/mpeg");
+_LIT(KPodcasts, ":\\Podcasts\\");
 
-#ifdef __WINS__
-	_LIT(KPodcastPath, "C:\\Podcasts\\");
+#ifdef __OVI_SIGNED__
+const TInt KMbmPodoclockPlay(EMbmPodoclock_0x200427faPlay);
+const TInt KMbmPodoclockDelete(EMbmPodoclock_0x200427faDelete);
 #else
-	_LIT(KPodcastPath, "E:\\Podcasts\\");
-#endif
-
+const TInt KMbmPodoclockPlay(EMbmPodoclockPlay);
+const TInt KMbmPodoclockDelete(EMbmPodoclockDelete);
+#endif 
 
 CPodOClockAppView* CPodOClockAppView::NewL(const TRect& aRect)
 	{
@@ -91,7 +97,10 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 	{
 	TRACER_AUTO;
 #ifdef __S60_50__
-	TRAP_IGNORE(iFeedback = static_cast<CPodOClockTouchFeedbackInterface*>(REComSession::CreateImplementationL(KTouchFeedbackImplUid, iDtorIdKey)));
+	TRAP_IGNORE(iFeedback = 
+		static_cast<CPodOClockTouchFeedbackInterface*>(
+			REComSession::CreateImplementationL(
+				KTouchFeedbackImplUid, iDtorIdKey)));
 #endif
 
 	LoadSettingsL();
@@ -126,10 +135,11 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 	ActivateL();
 	SetPositions();
 	
-	LoadIconL(EMbmPodoclockPlay, iPlayIcon, iPlayMask, iPlayIconSize);
+	LoadIconL(KMbmPodoclockPlay, iPlayIcon, iPlayMask, iPlayIconSize);
 	if (!IsThirdEdition())
 		{
-		LoadIconL(EMbmPodoclockDelete, iDeleteIcon, iDeleteMask, iDeleteIconSize);
+		LoadIconL(KMbmPodoclockDelete, iDeleteIcon, iDeleteMask, 
+				  iDeleteIconSize);
 		}
 	}
 
@@ -296,13 +306,18 @@ void CPodOClockAppView::Draw(const TRect& /*aRect*/) const
 
 void CPodOClockAppView::LoadIconL(TInt aIndex, CFbsBitmap*& aBitmap, 
 									CFbsBitmap*& aMask, TSize& aSize)
-    {
-    _LIT(KIconsFile, "\\resource\\apps\\podoclock_aif.mif");
-    // Create icon from SVG
-    AknIconUtils::CreateIconL(aBitmap, aMask, KIconsFile, aIndex, aIndex + 1);
-    // Give size
-    AknIconUtils::SetSize(aBitmap, aSize);
-    }
+	{
+	TRACER_AUTO;
+#ifdef __OVI_SIGNED__
+	_LIT(KIconsFile, "\\resource\\apps\\podoclock_0x200427FA.mif");
+#else
+	_LIT(KIconsFile, "\\resource\\apps\\podoclock.mif");
+#endif
+	// Create icon from SVG
+	AknIconUtils::CreateIconL(aBitmap, aMask, KIconsFile, aIndex, aIndex + 1);
+	// Give size
+	AknIconUtils::SetSize(aBitmap, aSize);
+	}
 
 
 void CPodOClockAppView::SetPositions()
@@ -592,6 +607,7 @@ void CPodOClockAppView::SetAlarmL(const TTime aTime, const TBool aShowConfirmati
 
 void CPodOClockAppView::AskRepeatAlarmL()
 	{
+	TRACER_AUTO;
 	if (iAskRepeat)
 		{
 		iAskRepeat = EFalse;
@@ -698,39 +714,62 @@ void CPodOClockAppView::DeleteFileL()
 void CPodOClockAppView::PlayRandomFileL()
 	{
 	TRACER_AUTO;
+	iFileArray.Reset();
+	
 	// Get the file list
 	LOGTEXT("Get the file list");
 
-	iFileArray.Reset();
-	CDirScan* scan(CDirScan::NewLC(CCoeEnv::Static()->FsSession()));
-	scan->SetScanDataL(KPodcastPath, KEntryAttNormal, ESortNone);
-	TInt error(KErrNone);
-	CDir* dirList(NULL);
-	TFindFile finder(CCoeEnv::Static()->FsSession());
-	User::LeaveIfError(iApaLsSession.Connect());
-	FOREVER
+	// Get list of mp3s from all drives
+	TDriveList drivelist;
+	User::LeaveIfError(CCoeEnv::Static()->FsSession().DriveList(drivelist)); 
+	for(TInt driveNumber(EDriveA); driveNumber <= EDriveZ; ++driveNumber)
 		{
-		TRAP(error, scan->NextL(dirList));
-		if (error | !dirList)
+		if (drivelist[driveNumber]) // drive attributes, or 0 if no drive
 			{
-			break;
+			LOGTEXT("driveNumber");
+			LOGINT(driveNumber);
+			LOGTEXT("drive attribs");
+			LOGINT(drivelist[driveNumber]);
+			// Now find mp3 files, add them to iFileArray
+			FindFilesOnDriveL(driveNumber);
 			}
-		FindFiles(finder, scan->FullPath());
-		};
-	iApaLsSession.Close();
-	delete dirList;
-	CleanupStack::PopAndDestroy(scan);
-	
+		}
+	// iFileArray is now populated
+
 	// Select a random file
 	iNumberOfFiles = iFileArray.Count();
 	LOGTEXT("iNumberOfFiles");
 	LOGINT(iNumberOfFiles);
 
+	// Choose random file and check MIME type
+	TInt random(0);
+	TBool found(EFalse);
+	User::LeaveIfError(iApaLsSession.Connect());
+	while (iNumberOfFiles > 0 && found == EFalse)
+		{
+		random = Math::Rand(iSeed) % iNumberOfFiles;
+		LOGTEXT("random");
+		LOGINT(random);
+
+		if (IsAudioFileL(iFileArray[random]))
+			{
+			LOGTEXT("Found audio");
+			found = ETrue;
+			}
+		else
+			{
+			// MIME type not audio, remove from list
+			LOGTEXT("Found non-audio, remove it:");
+			LOGBUF(iFileArray[random]);
+			--iNumberOfFiles;
+			iFileArray.Remove(random); 
+			}
+		}
+	iApaLsSession.Close();
+	
 	if (iNumberOfFiles < 1)
 		{
 		// Nothing to play
-
-		// Maybe localise: "No [KWildcard] podcasts found under [KPodcastPath]"
 		HBufC* text(StringLoader::LoadLC(R_PODOCLOCK_NO_PODCASTS_FOUND));
 		CAknInformationNote* note(new (ELeave) CAknInformationNote(ETrue));
 		note->ExecuteLD(*text); 
@@ -738,18 +777,13 @@ void CPodOClockAppView::PlayRandomFileL()
 		}
 	else
 		{
-
-////
-
-		TInt random(Math::Rand(iSeed) % iNumberOfFiles);
-		LOGTEXT("random");
-		LOGINT(random);
-		
+		LOGTEXT("Found a file, ready to play");
 		iCurrentFileNumber = random + 1;
 		iCurrentFileName = iFileArray[random];
 		iFileArray.Reset();
 		
-		TInt chopLength(iCurrentFileName.Length() - KPodcastPath().Length());
+		// The "1" is for the drive letter:
+		TInt chopLength(iCurrentFileName.Length() - KPodcasts().Length() - 1);
 		iChoppedFileName = iCurrentFileName.Right(chopLength);
 		
 		LOGBUF(iCurrentFileName);
@@ -759,18 +793,52 @@ void CPodOClockAppView::PlayRandomFileL()
 //		LOGINT(IsAudioFile(_L("E:\\podcasts\\A history of the world in 100 objects\\ahow_20100622-1000a-4175901727.mp3")));
 
 		LaunchFileEmbeddedL(iCurrentFileName);
-
-////
-
-		AskRepeatAlarmL();
 		}
 	
+	AskRepeatAlarmL();
 	DrawDeferred();
 	}
 
 
-void CPodOClockAppView::FindFiles(TFindFile& aFinder, const TDesC& aDir)
+void CPodOClockAppView::FindFilesOnDriveL(const TInt& aDriveNumber)
 	{
+	TRACER_AUTO;
+	
+	// Get drive letter
+	TChar driveLetter;
+	User::LeaveIfError(CCoeEnv::Static()->FsSession().DriveToChar(
+		aDriveNumber, driveLetter));
+
+	// Append ":\\podcasts\"
+	TBuf<KMaxChars> podcastPath;
+	podcastPath.Append(TUint(driveLetter));
+	podcastPath.Append(KPodcasts);
+	LOGBUF(podcastPath);
+
+	// Scan this folder
+	CDirScan* scan(CDirScan::NewLC(CCoeEnv::Static()->FsSession()));
+	scan->SetScanDataL(podcastPath, KEntryAttNormal, ESortNone);
+	TInt error(KErrNone);
+	CDir* dirList(NULL);
+	TFindFile finder(CCoeEnv::Static()->FsSession());
+	FOREVER
+		{
+		TRAP(error, scan->NextL(dirList));
+		if (error | !dirList)
+			{
+			break;
+			}
+		FindFilesInDir(finder, scan->FullPath());
+		};
+	delete dirList;
+	CleanupStack::PopAndDestroy(scan);
+	}
+
+
+void CPodOClockAppView::FindFilesInDir(TFindFile& aFinder, const TDesC& aDir)
+	{
+	TRACER_AUTO;
+	
 	CDir* foundFiles;
 	TFileName foundFile;
 	TInt error(aFinder.FindWildByDir(KWildcard, aDir, foundFiles));
@@ -786,12 +854,30 @@ void CPodOClockAppView::FindFiles(TFindFile& aFinder, const TDesC& aDir)
 				foundFile = aDir;
 				foundFile.Append((*foundFiles)[i].iName);
 //				LOGBUF(foundFile);
-				if (IsAudioFile(foundFile, (*foundFiles)[i].iSize))
-					{
-					iFileArray.Append(foundFile);
-					}
+				iFileArray.Append(foundFile);
 				}
 			}
+		}
+	}
+
+
+TBool CPodOClockAppView::IsAudioFileL(const TDesC& aFileName)
+	{
+	TRACER_AUTO;
+	LOGBUF(aFileName);
+	
+	TEntry entry;
+	TInt error(CCoeEnv::Static()->FsSession().Entry(aFileName, entry));
+
+	if (KErrNone != error)
+		{
+		LOGINT(error);
+		return EFalse;
+		}
+	else
+		{
+		LOGINT(entry.iSize);
+		return IsAudioFile(aFileName, entry.iSize);
 		}
 	}
 
@@ -800,29 +886,30 @@ TBool CPodOClockAppView::IsAudioFile(const TDesC& aFileName, const TInt aFileSiz
 	{
 	TRACER_AUTO;
 	LOGBUF(aFileName);
+	LOGINT(aFileSize);
 
-	iFileSize = aFileSize;
-	LOGTEXT("fileSize");
-	LOGINT(iFileSize);
-	if (iFileSize > 255)
+	TInt fileSize(aFileSize);
+	if (fileSize > 255)
 		{
-		iFileSize = 255;
+		fileSize = 255;
 		}
 
+	TBuf8<KMaxChars> fileBuffer;
 	if (CCoeEnv::Static()->FsSession().ReadFileSection(aFileName,
-		0, iFileBuffer, iFileSize) == KErrNone)
+		0, fileBuffer, fileSize) == KErrNone)
 		{
 		// LOGTEXT("ReadFileSection() OK");
 
-		iApaLsSession.RecognizeData(aFileName, iFileBuffer, *&iMimeType);
-		// LOGTEXT("iMimeType.iDataType");
-		// LOGBUF(iMimeType.iDataType.Des());
-		// LOGTEXT("iMimeType.iConfidence");
-		// LOGINT(iMimeType.iConfidence);
+		TDataRecognitionResult mimeType;
+		iApaLsSession.RecognizeData(aFileName, fileBuffer, *&mimeType);
+		// LOGTEXT("mimeType.iDataType");
+		// LOGBUF(mimeType.iDataType.Des());
+		// LOGTEXT("mimeType.iConfidence");
+		// LOGINT(mimeType.iConfidence);
 
-		if (iMimeType.iConfidence >= CApaDataRecognizerType::EProbable)
+		if (mimeType.iConfidence >= CApaDataRecognizerType::EProbable)
 			{
-			if (iMimeType.iDataType.Des().Compare(KAudioMpeg) == KErrNone)
+			if (mimeType.iDataType.Des().Compare(KAudioMpeg) == KErrNone)
 				{
 				return ETrue;
 				}
@@ -833,6 +920,7 @@ TBool CPodOClockAppView::IsAudioFile(const TDesC& aFileName, const TInt aFileSiz
 
 void CPodOClockAppView::LaunchFileEmbeddedL(const TDesC& aFileName)
 	{
+	TRACER_AUTO;
 	if (!iDocHandler)
 		{
 		iDocHandler = CDocumentHandler::NewL(CEikonEnv::Static()->Process());
@@ -849,6 +937,7 @@ void CPodOClockAppView::LaunchFileEmbeddedL(const TDesC& aFileName)
  
 void CPodOClockAppView::HandleServerAppExit(TInt aReason)
 	{
+	TRACER_AUTO;
 	// Handle closing the handler application
 	MAknServerAppExitObserver::HandleServerAppExit(aReason);
 	}

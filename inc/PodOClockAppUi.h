@@ -1,7 +1,7 @@
 /*
 Pod O'Clock for S60 phones.
 http://code.google.com/p/podoclock/
-Copyright (C) 2010  Hugo van Kemenade
+Copyright (C) 2010, 2011  Hugo van Kemenade
 
 This file is part of Pod O'Clock.
 
@@ -47,10 +47,18 @@ class CPodOClockAppUi : public CAknAppUi
 
 	private: // new methods
 		void OpenWebBrowserL(const TDesC& aUrl);
+#ifdef __OVI_SIGNED__
+		void UninstallSelfSignedVersionL();
+#else
+		void LaunchOviSignedVersionL();
+#endif
 
 	private: // Data
 		CBrowserLauncher* iBrowserLauncher;
 		CPodOClockAppView* iAppView;
+#ifdef __OVI_SIGNED__
+		TBool iUninstallAttempted;
+#endif
 
 	};
 

@@ -23,7 +23,7 @@
 &EN
 
 ; Standard SIS file header
-#{"Pod O'Clock"}, (0xA89FB98E),2,05,0
+#{"Pod O'Clock"}, (0xA89FB98E),2,06,0
 
 ; Localised Vendor name
 %{"Pod O'Clock"}
@@ -48,7 +48,7 @@
 } - "!:\resource\apps\PodOClock.rsc"
 
 "..\..\..\epoc32\data\z\private\10003a3f\import\apps\PodOClock_reg.r01" -"!:\private\10003a3f\import\apps\PodOClock_reg.r01"
-"..\..\..\epoc32\data\z\resource\apps\podoclock_aif.mif" - "!:\resource\apps\podoclock_aif.mif"
+"..\..\..\epoc32\data\z\resource\apps\podoclock.mif" - "!:\resource\apps\podoclock.mif"
 
 ; Symbian^X touch feedback
 "..\..\..\epoc32\release\gcce\urel\podoclocktouchfeedback.dll"-"!:\sys\bin\podoclocktouchfeedback.dll"
