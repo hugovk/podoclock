@@ -78,6 +78,4 @@ LIBRARY		apparc.lib
 LIBRARY		euser.lib
 LIBRARY		touchfeedback.lib
 
-CAPABILITY	NONE
-
 // End of file

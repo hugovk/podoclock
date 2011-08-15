@@ -117,7 +117,7 @@ void CPodOClockAppView::ConstructL(const TRect& aRect)
 	// Set the font
 	iFont = iEikonEnv->TitleFont();
 
-	// Set the windows size
+	// Set the window's size
 	SetRect(aRect);
 
 	iBackground = CAknsBasicBackgroundControlContext::NewL(
@@ -382,6 +382,16 @@ void CPodOClockAppView::SetPositions()
 void CPodOClockAppView::SizeChanged()
 	{
 	TRACER_AUTO;
+	if (iBackground)
+		{
+		iBackground->SetRect(Rect());
+		
+		if (&Window())
+			{
+			iBackground->SetParentPos(PositionRelativeToScreen());
+			}
+		}
+
 	SetPositions();
 	//DoChangePaneTextL();
 	DrawDeferred();

@@ -1,3 +1,3 @@
-time/t
+::time/t
 call abld target winscw udeb
-time/t
+::time/t

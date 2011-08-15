@@ -133,7 +133,7 @@ class CPodOClockAppView : public CCoeControl,
 		TSize iDeleteIconSize;
 		
 		const CFont* iFont;
-		MAknsControlContext* iBackground; // for skins support 
+		CAknsBasicBackgroundControlContext* iBackground; // for skins support 
 		TInt iRectWidth;
 
 		CAknNavigationControlContainer *iNaviContainer;
