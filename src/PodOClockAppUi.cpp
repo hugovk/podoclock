@@ -334,9 +334,13 @@ void CPodOClockAppUi::LaunchOviSignedVersionL()
 		User::LeaveIfError(lsSession.StartApp(*cmdLine));
 		CleanupStack::PopAndDestroy(cmdLine);
 		}
+	
 	CleanupStack::PopAndDestroy(&lsSession);
 	
-	// TODO exit?
+	if (KErrNone == error)
+		{
+		HandleCommandL(EEikCmdExit);
+		}
 	}
 #endif // !__OVI_SIGNED__
 
