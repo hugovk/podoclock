@@ -1,22 +1,32 @@
-	
+
 @echo ============== SELF-SIGNED ==========================
 
-@if exist PodOClock.sis  move PodOClock.sis  PodOClock.bak.sis
-@if exist PodOClock.sisx move PodOClock.sisx PodOClock.bak.sisx
-makesis PodOClock.pkg  PodOClock.sis
-@if exist PodOClock.sis signsis PodOClock.sis  PodOClock.sisx PodOClock.cer PodOClock.key password
+set sisfile=PodOClock
+set certfile=%sisfile%.cer
+set keyfile=%sisfile%.key
 
-@if exist PodOClock.sisx copy  PodOClock.sisx "%HOMEDRIVE%%HOMEPATH%\My Documents\Magic Briefcase"
-@if exist PodOClock.sisx start PodOClock.sisx
-@if exist PodOClock.sis  del   PodOClock.sis
+@if exist %sisfile%.sis  move %sisfile%.sis  %sisfile%.bak.sis
+@if exist %sisfile%.sisx move %sisfile%.sisx %sisfile%.bak.sisx
+makesis %sisfile%.pkg  %sisfile%.sis
+@if exist %sisfile%.sis signsis %sisfile%.sis  %sisfile%.sisx %certfile% %keyfile% password
+
+@if exist %sisfile%.sisx copy  %sisfile%.sisx "%HOMEDRIVE%%HOMEPATH%\My Documents\Magic Briefcase"
+@if exist %sisfile%.sisx start %sisfile%.sisx
+@if exist %sisfile%.sis  del   %sisfile%.sis
 
 @echo ============== OVI SIGNED ==========================
 
-@if exist PodOClock_signed.sis  move PodOClock_signed.sis  PodOClock_signed.bak.sis
-@if exist PodOClock_signed.sisx move PodOClock_signed.sisx PodOClock_signed.bak.sisx
-makesis PodOClock_signed.pkg  PodOClock_signed.sis
-@if exist PodOClock_signed.sis signsis PodOClock_signed.sis PodOClock_signed.sisx ovi_2011-05-30.crt ovi_2011-05-30.key
+set sisfile=PodOClock_signed
+set certfile=ovi_2011-05-30.crt
+set keyfile=ovi_2011-05-30.key
 
-@if exist PodOClock_signed.sisx copy  PodOClock_signed.sisx "%HOMEDRIVE%%HOMEPATH%\My Documents\Magic Briefcase"
-@if exist PodOClock_signed.sisx start PodOClock_signed.sisx
-@if exist PodOClock_signed.sis  del   PodOClock_signed.sis
+@if exist %sisfile%.sis  move %sisfile%.sis  %sisfile%.bak.sis
+@if exist %sisfile%.sisx move %sisfile%.sisx %sisfile%.bak.sisx
+makesis %sisfile%.pkg  %sisfile%.sis
+@if exist %sisfile%.sis signsis %sisfile%.sis %sisfile%.sisx %certfile% %keyfile% 
+
+@if exist %sisfile%.sisx copy  %sisfile%.sisx "%HOMEDRIVE%%HOMEPATH%\My Documents\Magic Briefcase"
+@if exist %sisfile%.sisx start %sisfile%.sisx
+@if exist %sisfile%.sis  del   %sisfile%.sis
+
+@dir /b *.sisx

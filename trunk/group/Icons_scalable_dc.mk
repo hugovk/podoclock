@@ -57,7 +57,7 @@ RESOURCE :
 		/c32,8 $(ICONDIR)\delete.svg
 
 	mifconv $(OSICONTARGETFILENAME) /X /h$(OSHEADERFILENAME) \
-		/c32 $(ICONDIR)\podoclock_signed.svg \
+		/c32 $(ICONDIR)\podoclock_bg_black.svg \
 		/c32,8 $(ICONDIR)\play.svg \
 		/c32,8 $(ICONDIR)\delete.svg
 

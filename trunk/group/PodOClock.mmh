@@ -26,4 +26,12 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 MACRO __OVI_SIGNED__
 #endif
 
+#ifdef OVI_SIGNED
+CAPABILITY SwEvent TrustedUI
+// SwEvent for TApaTask::SendMessage()
+// TrustedUI for RSWInstLauncher.SilentUninstall()
+#else
+CAPABILITY	NONE
+#endif
+
 // End of file

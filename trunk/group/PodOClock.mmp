@@ -91,12 +91,12 @@ SYSTEMINCLUDE	\epoc32\include
 LIBRARY			aknicon.lib
 LIBRARY			aknskins.lib
 LIBRARY			apgrfx.lib
-LIBRARY			apmime.lib    // TDataType
+LIBRARY			apmime.lib // TDataType
 LIBRARY			apparc.lib
 LIBRARY			avkon.lib
 LIBRARY			browserlauncher.lib
 LIBRARY			commonengine.lib
-LIBRARY			commonui.lib  // CDocumentHandler
+LIBRARY			commonui.lib // CDocumentHandler
 LIBRARY			cone.lib
 LIBRARY			ecom.lib
 LIBRARY			efsrv.lib
@@ -105,7 +105,7 @@ LIBRARY			eikcore.lib
 LIBRARY			estor.lib
 LIBRARY			euser.lib
 LIBRARY			gdi.lib
-LIBRARY			ws32.lib
+LIBRARY			ws32.lib // RWindowGroup
 
 #ifdef OVI_SIGNED
 LIBRARY			swinstcli.lib // RSWInstLauncher
@@ -114,13 +114,5 @@ LIBRARY			swinstcli.lib // RSWInstLauncher
 DEBUGLIBRARY	flogger.lib
 
 VENDORID	0
-
-#ifdef OVI_SIGNED
-CAPABILITY SwEvent TrustedUI
-// SwEvent for TApaTask::SendMessage()
-// TrustedUI for RSWInstLauncher.SilentUninstall()
-#else
-CAPABILITY	NONE
-#endif
 
 // End of file
