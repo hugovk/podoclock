@@ -37,8 +37,11 @@
 ; Supports S60 release 5.0
 [0x1028315F], 0, 0, 0, {"S60ProductID"}
 
-; Supports Symbian^3
+; Supports Symbian^3 and Anna
 [0x20022E6D], 0, 0, 0, {"S60ProductID"}
+
+; Supports Symbian Belle
+[0x2003A678], 0, 0, 0, {"S60ProductID"}
 
 ; Files to install
 "..\..\..\epoc32\release\gcce\urel\PodOClock_0x200427FA.exe" - "!:\sys\bin\PodOClock_0x200427FA.exe"

@@ -1,6 +1,7 @@
 Pod O'Clock change log
 ======================
-2.06 (15th August 2011)
+3.06 (29th August 2011, Ovi-signed)
+2.06 (15th August 2011, self-signed)
 * Check for podcasts on all drives.
 * Optimisation: check MIME type only for randomly selected file, not for all when building mp3 list.
 * Versions: Use a different, rounded icon for Ovi-signed, created using the Harmattan Icon Generator http://depot.javispedro.com/nit/hicg/ and put through SVG Converter.
