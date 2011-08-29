@@ -46,7 +46,8 @@ class CPodOClockAppUi : public CAknAppUi
 		void DynInitMenuPaneL(TInt aResourceId, CEikMenuPane* aMenuPane);
 
 	private: // new methods
-		void OpenWebBrowserL(const TDesC& aUrl);
+		void OpenWebBrowserL(const TDesC& aUrl, 
+							 const TBool aForceNative = EFalse);
 #ifdef __OVI_SIGNED__
 		void UninstallSelfSignedVersionL();
 #else
@@ -56,6 +57,7 @@ class CPodOClockAppUi : public CAknAppUi
 	private: // Data
 		CBrowserLauncher* iBrowserLauncher;
 		CPodOClockAppView* iAppView;
+		TBool iHideSugarSync;
 #ifdef __OVI_SIGNED__
 		TBool iUninstallAttempted;
 #endif
