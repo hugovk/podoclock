@@ -11,7 +11,7 @@ Pod O'Clock change log
 
 2.05 (3rd July 2011)
 * Ran the icons through Nokia's SVG Converter.
-* Use the default web browser (for example Opera Mobile or Nokia browser). Only supported when Ovi-signed with SwEvent. This is self-signed.
+* Use the default web browser (for example Opera Mobile or Nokia browser). Only supported when Ovi-signed with SwEvent.
 
 2.04 (19th June 2011)
 Add macro in .mmh to build with either self-signed UIDs or with Ovi-signed UIDs.
