@@ -237,7 +237,7 @@ void CPodOClockAppUi::HandleCommandL(TInt aCommand)
 			task.SetWgId(CEikonEnv::Static()->RootWin().Identifier());
 			task.SendToBackground();
 #ifdef __OVI_SIGNED__
-			UninstallSelfSignedVersionL();
+			// UninstallSelfSignedVersionL();
 #endif
 			}
 			break;
