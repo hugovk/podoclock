@@ -1,5 +1,8 @@
 Pod O'Clock change log
 ======================
+3.07 (4th September 2011, Ovi-signed)
+* Update Anna icon for S60 3rd edition.
+
 3.06 (29th August 2011, Ovi-signed)
 2.06 (15th August 2011, self-signed)
 * Check for podcasts on all drives.

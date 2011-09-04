@@ -29,9 +29,9 @@ along with Pod O'Clock.  If not, see <http://www.gnu.org/licenses/>.
 
 // CONSTANTS
 #ifdef __OVI_SIGNED__
-_LIT(KVersion, "3.06");
+_LIT(KVersion, "3.07");
 #else
-_LIT(KVersion, "2.06");
+_LIT(KVersion, "2.07");
 #endif
 
 // FORWARD DECLARATIONS

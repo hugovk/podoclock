@@ -85,6 +85,7 @@ TARGETPATH		\private\10003a3f\import\apps
 END //RESOURCE
 
 USERINCLUDE		..\inc
+USERINCLUDE		..\..\inc
 
 SYSTEMINCLUDE	\epoc32\include
 
